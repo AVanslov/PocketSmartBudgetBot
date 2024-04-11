@@ -786,9 +786,6 @@ updater.dispatcher.add_handler(
 updater.dispatcher.add_handler(
     CallbackQueryHandler(inline_button_handler)
 )
-# updater.dispatcher.add_handler(
-#     MessageHandler(Filters.regex(r'^\d+$'), add_value)
-# )
 updater.dispatcher.add_handler(
     MessageHandler(Filters.text, validate_data)
 )

@@ -11,7 +11,7 @@ class MoneyAbstractModel(models.Model):
     comment = models.CharField(default=None, max_length=150)
     category = models.CharField(max_length=150)
     value = models.IntegerField(default=0)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:

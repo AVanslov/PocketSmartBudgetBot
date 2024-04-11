@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import re
 matplotlib.use('Agg')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'budget_project.settings')
@@ -26,6 +27,9 @@ from telegram import (
 )
 
 from bot import views
+import telegramcalendar
+import messages
+import utils
 
 
 chat_id = 6284162894
@@ -53,6 +57,32 @@ EXPENSES_CATEGORIES_LIST = [
 ]
 
 
+def error_empty_ection(update, context):
+    chat = update.effective_chat
+    message = 'Пожалуйста, сначала нажмите на кнопку, чтобы выбрать действие'
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Добавить доходы', callback_data='add_incomes'
+            ),
+            InlineKeyboardButton(
+                'Добавить расходы', callback_data='add_expenses'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                'Показать отчет за год', callback_data='result'
+            ),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    context.bot.send_message(
+        chat_id=chat.id,
+        text=message,
+        reply_markup=reply_markup,
+    )
+
+
 def say_hi(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
@@ -77,10 +107,10 @@ def say_hi(update, context):
 <b>Приветствем, {}!</b>\n
 <b>SimBu</b> - Simple Budget - это сервис для ведения бюджета, где вы сможете:\n
 ✅ Записывать свои расходы и доходы\n
-✅ Настраивать категории расходов и доходов\n
-✅ Получать подробный отчет за текущий год в виде графика и диаграммы.\n
-<b>Текущая версия</b> <i>0.0.1 от 10.04.2024</i>\n
+✅ Получать подробный отчет за текущий год в виде графика.\n
 <b>Автор:</b> <i>Бучельников Александр </i>
+<b>Текущая версия</b> <i>0.0.2 от 11.04.2024</i>\n
+Исправлены ошибки при вводе неожиданных значений.
 ''').format(name)
     context.bot.send_message(
         chat_id=chat.id,
@@ -99,9 +129,19 @@ LAST_ACTIONS = []
 def add_incomes(update, context):
     chat = update.effective_chat
     views.get_or_create_user(chat)
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Прекратить ввод данных и начать сначала',
+                callback_data='stop_add_data',
+            ),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите комментарий',
+        reply_markup=reply_markup
     )
     LAST_ACTIONS.append('income')
 
@@ -109,9 +149,19 @@ def add_incomes(update, context):
 def add_expenses(update, context):
     chat = update.effective_chat
     views.get_or_create_user(chat)
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Прекратить ввод данных и начать сначала',
+                callback_data='stop_add_data',
+            ),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите комментарий',
+        reply_markup=reply_markup
     )
     LAST_ACTIONS.append('expense')
 
@@ -121,6 +171,12 @@ def add_name(update, context):
     # показать выбор категории
     chat = update.effective_chat
     value = update.message.text
+    if not value:
+        value = None
+    # добавляем валидацию
+    # значение должно состоять только из букв
+    # если не буквы и не пусто - заново отправляется сообщение введите комментарий
+    # если путо, ставим None
     if LAST_ACTIONS[-1] == 'income':
         INCOME.append(value)
         keyboard = [
@@ -151,6 +207,12 @@ def add_name(update, context):
             [
                 InlineKeyboardButton(
                     'delete', callback_data='delete_all'
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    'Прекратить ввод данных и начать сначала',
+                    callback_data='stop_add_data',
                 ),
             ],
         ]
@@ -186,6 +248,12 @@ def add_name(update, context):
                     'delete', callback_data='delete_all_expenses'
                 ),
             ],
+            [
+                InlineKeyboardButton(
+                    'Прекратить ввод данных и начать сначала',
+                    callback_data='stop_add_data',
+                ),
+            ],
         ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
@@ -198,9 +266,20 @@ def add_name(update, context):
 def add_value_message(update, context):
     # добавить валидацию должны быть буквы
     chat = update.effective_chat
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Прекратить ввод данных и начать сначала',
+                callback_data='stop_add_data',
+            ),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите сумму',
+        reply_markup=reply_markup,
+
     )
 
 
@@ -209,63 +288,78 @@ def add_value(update, context):
     if LAST_ACTIONS[-1] == 'income':
         INCOME.append(value)
 
-        # указать date (date)
-        # отправить запрос на запись данных в базу данных
-        # добавить проверку на колличество экземпляров
-        # если неправильное число, очистить кортеж
-        # и отправить пользователя заново заполнять имя
-        comment, category, value = tuple(INCOME)
-        chat = update.effective_chat
-        views.save_income_in_db(str(comment), str(category), str(value), author=chat)
-        INCOME.clear()
     else:
         EXPENSE.append(value)
-        comment, category, value = tuple(EXPENSE)
-        chat = update.effective_chat
-        views.save_expense_in_db(str(comment), str(category), str(value), author=chat)
-        EXPENSE.clear()
-        LAST_ACTIONS.clear()
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Добавить доходы', callback_data='add_incomes'
-            ),
-            InlineKeyboardButton(
-                'Добавить расходы', callback_data='add_expenses'
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                'Показать отчет за год', callback_data='result'
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                'Удалить все доходы', callback_data='delete_all'
-            ),
-            InlineKeyboardButton(
-                'Удалить все расходы', callback_data='delete_all_expenses'
-            ),
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    calendar_handler(update, context)
+
+
+def calendar_handler(update, context):
     context.bot.send_message(
-        chat_id=chat.id,
-        text='Показать результат?',
-        reply_markup=reply_markup,
+        chat_id=update.effective_chat.id,
+        text='Выберите дату',
+        reply_markup=telegramcalendar.create_calendar()
     )
 
 
-def add_date(update, context):
-    # вызвать функцию, создающую календарь
-    # принять данные из inline keybord
-    # преобразовать полученные данные в объект datetime
-    # добавить значение в tuple
-    # распаковать tuple
-    # вызвать функцию для добавления записи в БД
-    # очистить tuple
-    # очистить список с командами
-    pass
+def inline_handler(update, context):
+    query = update.callback_query
+    (kind, _, _, _, _) = utils.separate_callback_data(query.data)
+    if kind == messages.CALENDAR_CALLBACK:
+        inline_calendar_handler(update, context)
+    else:
+        print('Something wrong')
+
+
+def inline_calendar_handler(update, context):
+    selected, date = telegramcalendar.process_calendar_selection(update, context)
+    chat = update.effective_chat
+    if selected:
+        print(date)
+        if LAST_ACTIONS[-1] == 'income':
+            INCOME.append(date)
+
+            comment, category, value, date = tuple(INCOME)
+            # chat = update.effective_chat
+            views.save_income_in_db(str(comment), str(category), str(value), date, author=chat)
+            INCOME.clear()
+        else:
+            EXPENSE.append(date)
+            comment, category, value, date = tuple(EXPENSE)
+            # chat = update.effective_chat
+            views.save_expense_in_db(str(comment), str(category), str(value), date, author=chat)
+            EXPENSE.clear()
+            LAST_ACTIONS.clear()
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    'Добавить доходы', callback_data='add_incomes'
+                ),
+                InlineKeyboardButton(
+                    'Добавить расходы', callback_data='add_expenses'
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    'Показать отчет за год', callback_data='result'
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    'Удалить все доходы', callback_data='delete_all'
+                ),
+                InlineKeyboardButton(
+                    'Удалить все расходы', callback_data='delete_all_expenses'
+                ),
+            ],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_message(
+            chat_id=chat.id,
+            text='Показать результат?',
+            reply_markup=reply_markup,
+        )
 
 
 def delete_all(update, context):
@@ -516,6 +610,7 @@ def create_monthly_report_message(chat):
 
 def send_message_with_result(update, context):
     chat = update.effective_chat
+    chat_id = chat.id
     keyboard = [
         [
             InlineKeyboardButton(
@@ -547,14 +642,124 @@ def send_message_with_result(update, context):
     )
 
 
+def stop_add_data(update, context):
+    chat = update.effective_chat
+    INCOME.clear()
+    EXPENSE.clear()
+    LAST_ACTIONS.clear()
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Добавить доходы', callback_data='add_incomes'
+            ),
+            InlineKeyboardButton(
+                'Добавить расходы', callback_data='add_expenses'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                'Показать отчет за год', callback_data='result'
+            ),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    context.bot.send_message(
+        chat_id=chat.id,
+        text=(
+            'Процесс создания новой записи остановлен.'
+            'Вы можете начать сначала.'
+        ),
+        reply_markup=reply_markup,
+    )
+
+
+def validate_data(update, context):
+    chat = update.effective_chat
+    value = update.message.text
+    # добавляем валидацию
+    # значение должно состоять только из букв
+    # если не буквы и не пусто - заново отправляется сообщение введите комментарий
+    # если путо, ставим None
+    if not LAST_ACTIONS:
+        error_empty_ection(update, context)
+    else:
+        if LAST_ACTIONS[-1] == 'income':
+            if (re.fullmatch(r'^\D+$', value) or not value) and not INCOME:
+                add_name(update, context)
+
+            elif not re.fullmatch(r'^\D+$', value) and not INCOME:
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text='Ай-йай-йай, в комментарии должна быть хотя бы одна буква',
+                )
+                add_incomes(update, context)
+
+            elif re.fullmatch(r'^\d+$', value) and INCOME:
+                add_value(update, context)
+
+            elif not re.fullmatch(r'^\d+$', value) and INCOME:
+                context.bot.send_photo(
+                    chat.id,
+                    open(
+                        './media/'
+                        'error_image_value_expect_numbers.png',
+                        'rb'
+                    ),
+                )
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text='В cумме должны быть только цифры',
+                )
+                add_value_message(update, context)
+
+        elif LAST_ACTIONS[-1] == 'expense':
+            if (re.search(r'^\D+$', value) or not value) and not EXPENSE:
+                add_name(update, context)
+
+            elif not re.search(r'^\D+$', value) and not EXPENSE:
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text='Ай-йай-йай, в комментарии должна быть хотя бы одна буква',
+                )
+                add_expenses(update, context)
+
+            elif re.fullmatch(r'^\d+$', value) and EXPENSE:
+                add_value(update, context)
+
+            elif not re.fullmatch(r'^\d+$', value) and EXPENSE:
+                context.bot.send_photo(
+                    chat.id,
+                    open(
+                        './media/'
+                        'error_image_value_expect_numbers.png',
+                        'rb'
+                    ),
+                )
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text='В cумме должны быть только цифры',
+                )
+                add_value_message(update, context)
+        else:
+            error_empty_ection(update, context)
+
+
 def inline_button_handler(update, context):
     query = update.callback_query
     variant = query.data
     query.answer()
     print(variant)
     if variant == 'add_incomes':
+        if INCOME:
+            INCOME.clear()
+            EXPENSE.clear()
+            LAST_ACTIONS.clear()
         add_incomes(update, context)
     elif variant == 'add_expenses':
+        if EXPENSE:
+            INCOME.clear()
+            EXPENSE.clear()
+            LAST_ACTIONS.clear()
         add_expenses(update, context)
     elif variant in INCOMES_CATEGORIES_LIST:
         INCOME.append(variant)
@@ -569,6 +774,10 @@ def inline_button_handler(update, context):
         delete_all(update, context)
     elif variant == 'delete_all_expenses':
         delete_all_expenses(update, context)
+    elif variant == 'stop_add_data':
+        stop_add_data(update, context)
+    else:
+        inline_handler(update, context)
 
 
 updater.dispatcher.add_handler(
@@ -577,11 +786,11 @@ updater.dispatcher.add_handler(
 updater.dispatcher.add_handler(
     CallbackQueryHandler(inline_button_handler)
 )
+# updater.dispatcher.add_handler(
+#     MessageHandler(Filters.regex(r'^\d+$'), add_value)
+# )
 updater.dispatcher.add_handler(
-    MessageHandler(Filters.regex(r'^\d+$'), add_value)
-)
-updater.dispatcher.add_handler(
-    MessageHandler(Filters.text, add_name)
+    MessageHandler(Filters.text, validate_data)
 )
 
 

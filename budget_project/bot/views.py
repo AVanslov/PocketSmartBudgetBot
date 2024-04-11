@@ -18,29 +18,31 @@ def get_or_create_user(update_object):
     только этого пользователя.
     """
     new_user = User.objects.get_or_create(
-        username=update_object.username,
+        username=update_object.id,
         email=str(update_object.id) + '@budgetbot.com',
     )
     return new_user
 
 
-def save_income_in_db(comment, category, value, author):
+def save_income_in_db(comment, category, value, date, author):
     """Добавляет запись о доходах в таблицу Incomes."""
     new_income = Incomes.objects.create(
         comment=comment,
         category=category,
         value=value,
+        date=date,
         author=get_or_create_user(author)[0],
     )
     return new_income.save()
 
 
-def save_expense_in_db(comment, category, value, author):
+def save_expense_in_db(comment, category, value, date, author):
     """Добавляет запись о расходах в таблицу Expenses."""
     new_expence = Expenses.objects.create(
         comment=comment,
         category=category,
         value=value,
+        date=date,
         author=get_or_create_user(author)[0]
     )
     return new_expence.save()
@@ -70,6 +72,7 @@ def get_report_expenses(author):
     # incomes = Incomes.objects.filter(author=get_or_create_user(author)[0])
     # # print(incomes)
     expenses = Expenses.objects.filter(author=get_or_create_user(author)[0])
+    print(get_or_create_user(author)[0])
     list = []
     for expense in expenses.values():
         list.append(expense)

@@ -24,6 +24,7 @@ from telegram import (
     Bot,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    ReplyKeyboardRemove,
 )
 
 from bot import views
@@ -323,6 +324,11 @@ def inline_calendar_handler(update, context):
             # chat = update.effective_chat
             views.save_income_in_db(str(comment), str(category), str(value), date, author=chat)
             INCOME.clear()
+            context.bot.send_message(
+                chat_id=update.callback_query.from_user.id,
+                text=messages.calendar_response_message % (date.strftime("%d/%m/%Y")),
+                reply_markup=ReplyKeyboardRemove()
+            )
         else:
             EXPENSE.append(date)
             comment, category, value, date = tuple(EXPENSE)
@@ -330,6 +336,11 @@ def inline_calendar_handler(update, context):
             views.save_expense_in_db(str(comment), str(category), str(value), date, author=chat)
             EXPENSE.clear()
             LAST_ACTIONS.clear()
+            context.bot.send_message(
+                chat_id=update.callback_query.from_user.id,
+                text=messages.calendar_response_message % (date.strftime("%d/%m/%Y")),
+                reply_markup=ReplyKeyboardRemove()
+            )
 
         keyboard = [
             [

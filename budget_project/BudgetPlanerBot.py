@@ -376,6 +376,9 @@ def inline_calendar_handler(update, context):
 def delete_all(update, context):
     chat = update.effective_chat
     views.delete_all(chat)
+    INCOME.clear()
+    EXPENSE.clear()
+    LAST_ACTIONS.clear()
     keyboard = [
         [
             InlineKeyboardButton(
@@ -410,6 +413,9 @@ def delete_all(update, context):
 def delete_all_expenses(update, context):
     chat = update.effective_chat
     views.delete_all_expenses(chat)
+    INCOME.clear()
+    EXPENSE.clear()
+    LAST_ACTIONS.clear()
     keyboard = [
         [
             InlineKeyboardButton(

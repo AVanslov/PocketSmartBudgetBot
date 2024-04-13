@@ -207,11 +207,6 @@ def add_name(update, context):
             ],
             [
                 InlineKeyboardButton(
-                    'delete', callback_data='delete_all'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
                     'Прекратить ввод данных и начать сначала',
                     callback_data='stop_add_data',
                 ),
@@ -242,11 +237,6 @@ def add_name(update, context):
                 ),
                 InlineKeyboardButton(
                     'Путешествия', callback_data='category_trips'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'delete', callback_data='delete_all_expenses'
                 ),
             ],
             [

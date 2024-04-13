@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import re
+
 matplotlib.use('Agg')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'budget_project.settings')
@@ -28,6 +29,7 @@ from telegram import (
 )
 
 from bot import views
+import categoriesupdate
 import telegramcalendar
 import messages
 import utils
@@ -180,72 +182,79 @@ def add_name(update, context):
     # если путо, ставим None
     if LAST_ACTIONS[-1] == 'income':
         INCOME.append(value)
-        keyboard = [
-            [
-                InlineKeyboardButton(
-                    'Зарплата', callback_data='category_salary'
-                ),
-                InlineKeyboardButton(
-                    'Облигации', callback_data='category_obligation'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Акции', callback_data='category_stocks'
-                ),
-                InlineKeyboardButton(
-                    'Инвестиции', callback_data='category_investments'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Фриланс', callback_data='category_freelance'
-                ),
-                InlineKeyboardButton(
-                    'Бизнес', callback_data='category_business'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Прекратить ввод данных и начать сначала',
-                    callback_data='stop_add_data',
-                ),
-            ],
-        ]
+        keyboard = categoriesupdate.inline_categories_buttons(type='incomes', author=chat)
+        # keyboard = [
+        #     [
+        #         InlineKeyboardButton(
+        #             'Зарплата', callback_data='category_salary'
+        #         ),
+        #         InlineKeyboardButton(
+        #             'Облигации', callback_data='category_obligation'
+        #         ),
+        #     ],
+        #     [
+        #         InlineKeyboardButton(
+        #             'Акции', callback_data='category_stocks'
+        #         ),
+        #         InlineKeyboardButton(
+        #             'Инвестиции', callback_data='category_investments'
+        #         ),
+        #     ],
+        #     [
+        #         InlineKeyboardButton(
+        #             'Фриланс', callback_data='category_freelance'
+        #         ),
+        #         InlineKeyboardButton(
+        #             'Бизнес', callback_data='category_business'
+        #         ),
+        #     ],
+        #     # [
+        #     #     InlineKeyboardButton(
+        #     #         'Редактировать категории', callback_data='incomes_category_update'
+        #     #     ),
+        #     # ],
+        #     [
+        #         InlineKeyboardButton(
+        #             'Прекратить ввод данных и начать сначала',
+        #             callback_data='stop_add_data',
+        #         ),
+        #     ],
+        # ]
     else:
         EXPENSE.append(value)
-        keyboard = [
-            [
-                InlineKeyboardButton(
-                    'Продукты', callback_data='category_products'
-                ),
-                InlineKeyboardButton(
-                    'Аренда', callback_data='category_rent'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Цветы', callback_data='category_flowers'
-                ),
-                InlineKeyboardButton(
-                    'Одежда', callback_data='category_clothes'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Питомцы', callback_data='category_pets'
-                ),
-                InlineKeyboardButton(
-                    'Путешествия', callback_data='category_trips'
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Прекратить ввод данных и начать сначала',
-                    callback_data='stop_add_data',
-                ),
-            ],
-        ]
+        keyboard = categoriesupdate.inline_categories_buttons(type='expenses', author=chat)
+        # keyboard = [
+        #     [
+        #         InlineKeyboardButton(
+        #             'Продукты', callback_data='category_products'
+        #         ),
+        #         InlineKeyboardButton(
+        #             'Аренда', callback_data='category_rent'
+        #         ),
+        #     ],
+        #     [
+        #         InlineKeyboardButton(
+        #             'Цветы', callback_data='category_flowers'
+        #         ),
+        #         InlineKeyboardButton(
+        #             'Одежда', callback_data='category_clothes'
+        #         ),
+        #     ],
+        #     [
+        #         InlineKeyboardButton(
+        #             'Питомцы', callback_data='category_pets'
+        #         ),
+        #         InlineKeyboardButton(
+        #             'Путешествия', callback_data='category_trips'
+        #         ),
+        #     ],
+        #     [
+        #         InlineKeyboardButton(
+        #             'Прекратить ввод данных и начать сначала',
+        #             callback_data='stop_add_data',
+        #         ),
+        #     ],
+        # ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
@@ -768,12 +777,19 @@ def inline_button_handler(update, context):
             EXPENSE.clear()
             LAST_ACTIONS.clear()
         add_expenses(update, context)
-    elif variant in INCOMES_CATEGORIES_LIST:
-        INCOME.append(variant)
+    # elif variant in INCOMES_CATEGORIES_LIST
+    elif variant in categoriesupdate.list_of_author_categories(
+        type='incomes', author=update.effective_chat
+    ):
+        INCOME.append(views.get_category_object(type='incomes', category=variant, author=update.effective_chat)) # нужно записать id объекта, у которого вариант и автор совпадают
         add_value_message(update, context)
-    elif variant in EXPENSES_CATEGORIES_LIST:
+    # elif variant in EXPENSES_CATEGORIES_LIST:
+    elif variant in categoriesupdate.list_of_author_categories(
+        type='expenses', author=update.effective_chat
+    ):
         print(variant)
-        EXPENSE.append(variant)
+        EXPENSE.append(views.get_category_object(type='expenses', category=variant, author=update.effective_chat)) # нужно записать id объекта, у которого вариант и автор совпадают
+        # EXPENSE.append(variant)
         add_value_message(update, context)
     elif variant == 'result':
         send_message_with_result(update, context)

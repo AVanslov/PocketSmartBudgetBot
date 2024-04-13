@@ -112,8 +112,8 @@ def say_hi(update, context):
 ✅ Записывать свои расходы и доходы\n
 ✅ Получать подробный отчет за текущий год в виде графика.\n
 <b>Автор:</b> <i>Бучельников Александр </i>
-<b>Текущая версия</b> <i>0.0.2 от 11.04.2024</i>\n
-Исправлены ошибки при вводе неожиданных значений.
+<b>Текущая версия</b> <i>0.0.4 от 13.04.2024</i>\n
+Установлены значения категорий по умолчанию.
 ''').format(name)
     context.bot.send_message(
         chat_id=chat.id,
@@ -255,6 +255,21 @@ def add_name(update, context):
         #         ),
         #     ],
         # ]
+    default_buttons = [
+        InlineKeyboardButton(
+            'Редактировать категории',
+            callback_data='incomes_category_update'
+        ),
+        InlineKeyboardButton(
+            'Прекратить ввод данных и начать сначала',
+            callback_data='stop_add_data',
+        ),
+    ]
+
+    for i in default_buttons:
+        a = []
+        a.append(i)
+        keyboard.append(a)
     reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
@@ -321,7 +336,7 @@ def inline_calendar_handler(update, context):
 
             comment, category, value, date = tuple(INCOME)
             # chat = update.effective_chat
-            views.save_income_in_db(str(comment), str(category), str(value), date, author=chat)
+            views.save_income_in_db(str(comment), category, value, date, author=chat)
             INCOME.clear()
             context.bot.send_message(
                 chat_id=update.callback_query.from_user.id,
@@ -332,7 +347,7 @@ def inline_calendar_handler(update, context):
             EXPENSE.append(date)
             comment, category, value, date = tuple(EXPENSE)
             # chat = update.effective_chat
-            views.save_expense_in_db(str(comment), str(category), str(value), date, author=chat)
+            views.save_expense_in_db(str(comment), category, value, date, author=chat)
             EXPENSE.clear()
             LAST_ACTIONS.clear()
             context.bot.send_message(

@@ -35,7 +35,7 @@ def get_or_create_user(update_object):
 
     Проверяет совпадает ли данные из объекта с update.effective_chat
     и возвращает объект User для предоставления права просматривать поля
-    только этого пользователя.
+    только этого полget_expenses_categoriesьзователя.
     """
     # если пользователь не существует, 
     # создать два перечня категорий
@@ -113,7 +113,7 @@ def save_expense_in_db(comment, category, value, date, author):
     """Добавляет запись о расходах в таблицу Expenses."""
     new_expence = Expenses.objects.create(
         comment=comment,
-        category=CategoriesOfIncomes.objects.get(id=category),
+        category=CategoriesOfExpenses.objects.get(id=category),
         value=value,
         date=date,
         author=get_or_create_user(author)[0]
@@ -206,7 +206,7 @@ def get_income_categories(author):
     return list
 
 
-def get_expenses_categories(author):
+def get_expense_categories(author):
     """
     Возвращает категории расходов пользователя
     в виде cловарей, влоенных в список.

@@ -9,8 +9,12 @@ def list_of_author_categories(type: str, author):
     возвращает список с категориями данного типа.
     """
     categories = []
-    for i in views.get_income_categories(author):
-        categories.append(i['category'])
+    if type == 'incomes':
+        for i in views.get_income_categories(author):
+            categories.append(i['category'])
+    else:
+        for i in views.get_expense_categories(author):
+            categories.append(i['category'])
     return categories
 
 
@@ -35,31 +39,21 @@ def inline_categories_buttons(type: str, author):
             list.append(
                     InlineKeyboardButton(
                         i['category'],
-                        callback_data=i['category'])
-                    )
-            keyboard.append(list)
-    else:
-        for i in views.get_expenses_categories(author):
-            keyboard.append(
-                list(
-                    InlineKeyboardButton(
-                        str(i['category']),
-                        callback_data=str(i['category'])
+                        callback_data=i['category']
                     )
                 )
-            )
-    default_buttons = [
-        InlineKeyboardButton(
-            'Редактировать категории',
-            callback_data='incomes_category_update'
-        ),
-        InlineKeyboardButton(
-            'Прекратить ввод данных и начать сначала',
-            callback_data='stop_add_data',
-        ),
-    ]
-    keyboard.append(default_buttons)
-    print(views.get_income_categories(author))        
+            keyboard.append(list)
+    else:
+        for i in views.get_expense_categories(author):
+            list = []
+            list.append(
+                    InlineKeyboardButton(
+                        i['category'],
+                        callback_data=i['category']
+                    )
+                )
+            keyboard.append(list)
+    print(views.get_income_categories(author))
     print(keyboard)
     return keyboard
 

@@ -41,24 +41,6 @@ bot = Bot(token='7020824901:AAFw9qE5wBw-btZmWChKHU9k5jygjpZ49Ww')
 
 updater = Updater(token='7020824901:AAFw9qE5wBw-btZmWChKHU9k5jygjpZ49Ww')
 
-INCOMES_CATEGORIES_LIST = [
-    'category_salary',
-    'category_obligation',
-    'category_stocks',
-    'category_investments',
-    'category_freelance',
-    'category_business',
-]
-
-EXPENSES_CATEGORIES_LIST = [
-    'category_products',
-    'category_rent',
-    'category_flowers',
-    'category_clothes',
-    'category_pets',
-    'category_trips',
-]
-
 
 def error_empty_ection(update, context):
     chat = update.effective_chat
@@ -182,79 +164,17 @@ def add_name(update, context):
     # если путо, ставим None
     if LAST_ACTIONS[-1] == 'income':
         INCOME.append(value)
-        keyboard = categoriesupdate.inline_categories_buttons(type='incomes', author=chat)
-        # keyboard = [
-        #     [
-        #         InlineKeyboardButton(
-        #             'Зарплата', callback_data='category_salary'
-        #         ),
-        #         InlineKeyboardButton(
-        #             'Облигации', callback_data='category_obligation'
-        #         ),
-        #     ],
-        #     [
-        #         InlineKeyboardButton(
-        #             'Акции', callback_data='category_stocks'
-        #         ),
-        #         InlineKeyboardButton(
-        #             'Инвестиции', callback_data='category_investments'
-        #         ),
-        #     ],
-        #     [
-        #         InlineKeyboardButton(
-        #             'Фриланс', callback_data='category_freelance'
-        #         ),
-        #         InlineKeyboardButton(
-        #             'Бизнес', callback_data='category_business'
-        #         ),
-        #     ],
-        #     # [
-        #     #     InlineKeyboardButton(
-        #     #         'Редактировать категории', callback_data='incomes_category_update'
-        #     #     ),
-        #     # ],
-        #     [
-        #         InlineKeyboardButton(
-        #             'Прекратить ввод данных и начать сначала',
-        #             callback_data='stop_add_data',
-        #         ),
-        #     ],
-        # ]
+        keyboard = categoriesupdate.inline_categories_buttons(
+            type='incomes',
+            author=chat
+        )
     else:
         EXPENSE.append(value)
-        keyboard = categoriesupdate.inline_categories_buttons(type='expenses', author=chat)
-        # keyboard = [
-        #     [
-        #         InlineKeyboardButton(
-        #             'Продукты', callback_data='category_products'
-        #         ),
-        #         InlineKeyboardButton(
-        #             'Аренда', callback_data='category_rent'
-        #         ),
-        #     ],
-        #     [
-        #         InlineKeyboardButton(
-        #             'Цветы', callback_data='category_flowers'
-        #         ),
-        #         InlineKeyboardButton(
-        #             'Одежда', callback_data='category_clothes'
-        #         ),
-        #     ],
-        #     [
-        #         InlineKeyboardButton(
-        #             'Питомцы', callback_data='category_pets'
-        #         ),
-        #         InlineKeyboardButton(
-        #             'Путешествия', callback_data='category_trips'
-        #         ),
-        #     ],
-        #     [
-        #         InlineKeyboardButton(
-        #             'Прекратить ввод данных и начать сначала',
-        #             callback_data='stop_add_data',
-        #         ),
-        #     ],
-        # ]
+        keyboard = categoriesupdate.inline_categories_buttons(
+            type='expenses',
+            author=chat
+        )
+
     default_buttons = [
         InlineKeyboardButton(
             'Редактировать категории',
@@ -279,7 +199,11 @@ def add_name(update, context):
 
 
 def add_value_message(update, context):
-    # добавить валидацию должны быть буквы
+    """
+    Принимает значение суммы и отправляет сообщение
+    с предложением завершить процесс добавления данных.
+    """
+
     chat = update.effective_chat
     keyboard = [
         [
@@ -704,6 +628,33 @@ def stop_add_data(update, context):
     )
 
 
+def add_new_category_message(update, context):
+    chat = update.effective_chat
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Прекратить ввод данных и начать сначала',
+                callback_data='stop_add_data',
+            ),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    context.bot.send_message(
+        chat_id=chat.id,
+        text='Введите название категории',
+        reply_markup=reply_markup,
+
+    )
+
+def add_new_category(update, context):
+    chat = update.effective_chat
+    value = update.message.text
+    if LAST_ACTIONS[-1] == 'income_category_update':
+        views.create_income_category(value, author=chat)
+    elif LAST_ACTIONS[-1] == 'expense_category_update':
+        views.create_expense_category(value, author=chat)
+
+
 def validate_data(update, context):
     chat = update.effective_chat
     value = update.message.text
@@ -771,6 +722,15 @@ def validate_data(update, context):
                     text='В cумме должны быть только цифры',
                 )
                 add_value_message(update, context)
+        elif LAST_ACTIONS[-1] == 'income_category_update':
+            if (re.search(r'^\D+$', value) or not value):
+                add_new_category(update, context)
+            elif not re.search(r'^\D+$', value):
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text='Ай-йай-йай, в названии категории должна быть хотя бы одна буква',
+                )
+                add_new_category_message(update, context)
         else:
             error_empty_ection(update, context)
 
@@ -792,19 +752,16 @@ def inline_button_handler(update, context):
             EXPENSE.clear()
             LAST_ACTIONS.clear()
         add_expenses(update, context)
-    # elif variant in INCOMES_CATEGORIES_LIST
     elif variant in categoriesupdate.list_of_author_categories(
         type='incomes', author=update.effective_chat
     ):
         INCOME.append(views.get_category_object(type='incomes', category=variant, author=update.effective_chat)) # нужно записать id объекта, у которого вариант и автор совпадают
         add_value_message(update, context)
-    # elif variant in EXPENSES_CATEGORIES_LIST:
     elif variant in categoriesupdate.list_of_author_categories(
         type='expenses', author=update.effective_chat
     ):
         print(variant)
         EXPENSE.append(views.get_category_object(type='expenses', category=variant, author=update.effective_chat)) # нужно записать id объекта, у которого вариант и автор совпадают
-        # EXPENSE.append(variant)
         add_value_message(update, context)
     elif variant == 'result':
         send_message_with_result(update, context)
@@ -814,6 +771,11 @@ def inline_button_handler(update, context):
         delete_all_expenses(update, context)
     elif variant == 'stop_add_data':
         stop_add_data(update, context)
+    elif variant == 'incomes_category_update':
+        LAST_ACTIONS.append('income_category_update')
+        categoriesupdate.incomes_category_update(update, context)
+    elif variant == 'add_new_category':
+        add_new_category_message(update, context)
     else:
         inline_handler(update, context)
 

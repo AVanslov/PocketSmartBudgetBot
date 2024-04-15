@@ -41,11 +41,33 @@ bot = Bot(token='7020824901:AAFw9qE5wBw-btZmWChKHU9k5jygjpZ49Ww')
 
 updater = Updater(token='7020824901:AAFw9qE5wBw-btZmWChKHU9k5jygjpZ49Ww')
 
+MESSAGES_ID = []
+
+
+def auto_delete_previouse_message(update, context):
+    # if update.callback_query is None:
+    #     current_message_number = update.message.message_id
+    # else:
+    #     current_message_number = update.callback_query.message.message_id
+    # if MESSAGES_ID:
+    #     context.bot.delete_message(
+    #         chat_id=update.effective_chat.id,
+    #         message_id=MESSAGES_ID[len(MESSAGES_ID) - 1]
+    #     )
+    #     MESSAGES_ID.clear()
+    # MESSAGES_ID.append(current_message_number)
+    pass
+
 
 def error_empty_ection(update, context):
     chat = update.effective_chat
     message = 'Пожалуйста, сначала нажмите на кнопку, чтобы выбрать действие'
     keyboard = [
+        [
+            InlineKeyboardButton(
+                'Спланировать бюджет', callback_data='ignore'
+            ),
+        ],
         [
             InlineKeyboardButton(
                 'Добавить доходы', callback_data='add_incomes'
@@ -56,11 +78,25 @@ def error_empty_ection(update, context):
         ],
         [
             InlineKeyboardButton(
+                'Редактировать категории доходов', callback_data='incomes_category_update'
+            ),
+            InlineKeyboardButton(
+                'Редактировать категории расходов', callback_data='expenses_category_update'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
                 'Показать отчет за год', callback_data='result'
+            ),
+            InlineKeyboardButton(
+                'Показать отчет за месяц', callback_data='ignore'
             ),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text=message,
@@ -74,6 +110,11 @@ def say_hi(update, context):
     keyboard = [
         [
             InlineKeyboardButton(
+                'Спланировать бюджет', callback_data='ignore'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
                 'Добавить доходы', callback_data='add_incomes'
             ),
             InlineKeyboardButton(
@@ -82,7 +123,20 @@ def say_hi(update, context):
         ],
         [
             InlineKeyboardButton(
+                'Редактировать категории доходов', callback_data='incomes_category_update'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                'Редактировать каткгории расходов', callback_data='expenses_category_update'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
                 'Показать отчет за год', callback_data='result'
+            ),
+            InlineKeyboardButton(
+                'Показать отчет за месяц', callback_data='ignore'
             ),
         ],
     ]
@@ -97,6 +151,9 @@ def say_hi(update, context):
 <b>Текущая версия</b> <i>0.0.5 от 15.04.2024</i>\n
 Добавлена возможность удалять категории расходов.
 ''').format(name)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text=message,
@@ -111,6 +168,7 @@ EXPENSE = []
 LAST_ACTIONS = []
 CHOSEN_CATEGORY = []
 
+
 def add_incomes(update, context):
     chat = update.effective_chat
     views.get_or_create_user(chat)
@@ -123,6 +181,9 @@ def add_incomes(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите комментарий',
@@ -143,6 +204,9 @@ def add_expenses(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите комментарий',
@@ -191,6 +255,9 @@ def add_name(update, context):
         a.append(i)
         keyboard.append(a)
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text='Выберите категорию',
@@ -214,6 +281,9 @@ def add_value_message(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите сумму',
@@ -230,10 +300,13 @@ def add_value(update, context):
     else:
         EXPENSE.append(value)
 
+    auto_delete_previouse_message(update, context)
+
     calendar_handler(update, context)
 
 
 def calendar_handler(update, context):
+
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text='Выберите дату',
@@ -291,6 +364,16 @@ def inline_calendar_handler(update, context):
             ],
             [
                 InlineKeyboardButton(
+                    'Редактировать категории доходов', callback_data='incomes_category_update'
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    'Редактировать категории расходов', callback_data='expenses_category_update'
+                ),
+            ],
+            [
+                InlineKeyboardButton(
                     'Показать отчет за год', callback_data='result'
                 ),
             ],
@@ -304,6 +387,7 @@ def inline_calendar_handler(update, context):
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
+
         context.bot.send_message(
             chat_id=chat.id,
             text='Показать результат?',
@@ -341,6 +425,9 @@ def delete_all(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text='Показать результат?',
@@ -378,6 +465,9 @@ def delete_all_expenses(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
+    auto_delete_previouse_message(update, context)
+
     context.bot.send_message(
         chat_id=chat.id,
         text='Показать результат?',
@@ -590,6 +680,7 @@ def send_message_with_result(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+    auto_delete_previouse_message(update, context)
     context.bot.send_photo(
         chat_id,
         create_grafic(chat, group_by='date', value_for_sum='value', type='fig'),
@@ -613,11 +704,22 @@ def stop_add_data(update, context):
         ],
         [
             InlineKeyboardButton(
+                'Редактировать категории доходов', callback_data='incomes_category_update'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                'Редактировать категории расходов', callback_data='expenses_category_update'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
                 'Показать отчет за год', callback_data='result'
             ),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+    auto_delete_previouse_message(update, context)
     context.bot.send_message(
         chat_id=chat.id,
         text=(
@@ -638,6 +740,7 @@ def add_new_category_message(update, context):
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+    auto_delete_previouse_message(update, context)
     context.bot.send_message(
         chat_id=chat.id,
         text='Введите название категории',
@@ -655,6 +758,7 @@ def add_new_category(update, context):
     elif LAST_ACTIONS[-1] == 'expense_category_update':
         views.create_expense_category(value, author=chat)
         categoriesupdate.expenses_category_update(update, context)
+    auto_delete_previouse_message(update, context)
 
 
 def validate_data(update, context):

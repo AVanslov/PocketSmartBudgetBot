@@ -218,3 +218,13 @@ def get_expense_categories(author):
     for category in categories.values():
         list.append(category)
     return list
+
+
+def delete_category(type: str, category, author):
+    """
+    Удаляет выбранную категорию.
+    """
+    CategoriesOfIncomes.objects.filter(
+        category=category,
+        author=get_or_create_user(author)[0]
+    ).delete()

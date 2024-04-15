@@ -12,6 +12,10 @@ ADDITIONAL_BUTTONS = [
             'Удалить все',
             callback_data='delete_all_categories',
         ),
+        InlineKeyboardButton(
+                'Главное меню',
+                callback_data='stop_add_data',
+            ),
     ]
 
 
@@ -90,7 +94,11 @@ def incomes_category_update(update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
-        text='Чтобы удалить или отредактировать категорию, выберите ее ниже.',
+        text=(
+            'Чтобы удалить или отредактировать категорию, выберите ее ниже.'
+            'Будьте аккуратны: при удалении категории удаляются все записи'
+            'о доходах/расходах в данной категории.'
+        ),
         reply_markup=reply_markup,
     )
 
@@ -115,9 +123,46 @@ def expenses_category_update(update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
     context.bot.send_message(
         chat_id=chat.id,
-        text='Чтобы удалить или отредактировать категорию, выберите ее ниже.',
+        text=(
+            'Чтобы удалить или отредактировать категорию, выберите ее ниже.'
+            'Будьте аккуратны: при удалении категории удаляются все записи'
+            'о доходах/расходах в данной категории.'
+        ),
         reply_markup=reply_markup,
     )
 
 
-
+def income_category_update(update, context):
+    """
+    Выводить кнопки для удаления или редактирования
+    выбранной категории и кнопки назад.
+    """
+    chat = update.effective_chat
+    query = update.callback_query
+    variant = query.data
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Изменить название категории',
+                callback_data='update_category'
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                'Удалить категорию и все её записи',
+                callback_data='delete_category'
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                'Назад',
+                callback_data='incomes_category_update'
+            )
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    context.bot.send_message(
+        chat_id=chat.id,
+        text='Вы выбрали {}'.format(variant),
+        reply_markup=reply_markup,
+    )

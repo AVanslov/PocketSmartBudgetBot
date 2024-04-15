@@ -109,7 +109,7 @@ INCOME = []
 EXPENSE = []
 
 LAST_ACTIONS = []
-
+CHOSEN_CATEGORY = []
 
 def add_incomes(update, context):
     chat = update.effective_chat
@@ -621,7 +621,6 @@ def stop_add_data(update, context):
     context.bot.send_message(
         chat_id=chat.id,
         text=(
-            'Процесс создания новой записи остановлен.'
             'Вы можете начать сначала.'
         ),
         reply_markup=reply_markup,
@@ -646,13 +645,16 @@ def add_new_category_message(update, context):
 
     )
 
+
 def add_new_category(update, context):
     chat = update.effective_chat
     value = update.message.text
-    if LAST_ACTIONS[-1] == 'income_category_update':
+    if LAST_ACTIONS[-1] == 'incomes_category_update':
         views.create_income_category(value, author=chat)
+        categoriesupdate.incomes_category_update(update, context)
     elif LAST_ACTIONS[-1] == 'expense_category_update':
         views.create_expense_category(value, author=chat)
+        categoriesupdate.expenses_category_update(update, context)
 
 
 def validate_data(update, context):
@@ -722,7 +724,7 @@ def validate_data(update, context):
                     text='В cумме должны быть только цифры',
                 )
                 add_value_message(update, context)
-        elif LAST_ACTIONS[-1] == 'income_category_update':
+        elif LAST_ACTIONS[-1] == 'incomes_category_update':
             if (re.search(r'^\D+$', value) or not value):
                 add_new_category(update, context)
             elif not re.search(r'^\D+$', value):
@@ -752,6 +754,33 @@ def inline_button_handler(update, context):
             EXPENSE.clear()
             LAST_ACTIONS.clear()
         add_expenses(update, context)
+    elif variant == 'delete_category':
+        if CHOSEN_CATEGORY[-1] in categoriesupdate.list_of_author_categories(
+            type='incomes',
+            author=update.effective_chat
+        ):
+            views.delete_category(
+                type='incomes',
+                category=CHOSEN_CATEGORY[-1],
+                author=update.effective_chat
+            )
+            
+        elif CHOSEN_CATEGORY[-1] in categoriesupdate.list_of_author_categories(
+            type='expenses',
+            author=update.effective_chat
+        ):
+            views.delete_category(
+                type='expenses',
+                category=CHOSEN_CATEGORY[-1],
+                author=update.effective_chat
+            )
+        categoriesupdate.incomes_category_update(update, context)
+    elif variant in categoriesupdate.list_of_author_categories(
+        type='incomes',
+        author=update.effective_chat
+    ) and LAST_ACTIONS[-1] == 'incomes_category_update':
+        CHOSEN_CATEGORY.append(variant)
+        categoriesupdate.income_category_update(update, context)
     elif variant in categoriesupdate.list_of_author_categories(
         type='incomes', author=update.effective_chat
     ):
@@ -772,7 +801,7 @@ def inline_button_handler(update, context):
     elif variant == 'stop_add_data':
         stop_add_data(update, context)
     elif variant == 'incomes_category_update':
-        LAST_ACTIONS.append('income_category_update')
+        LAST_ACTIONS.append('incomes_category_update')
         categoriesupdate.incomes_category_update(update, context)
     elif variant == 'add_new_category':
         add_new_category_message(update, context)

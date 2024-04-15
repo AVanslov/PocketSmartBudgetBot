@@ -94,8 +94,8 @@ def say_hi(update, context):
 ✅ Записывать свои расходы и доходы\n
 ✅ Получать подробный отчет за текущий год в виде графика.\n
 <b>Автор:</b> <i>Бучельников Александр </i>
-<b>Текущая версия</b> <i>0.0.4 от 13.04.2024</i>\n
-Установлены значения категорий по умолчанию.
+<b>Текущая версия</b> <i>0.0.5 от 15.04.2024</i>\n
+Добавлена возможность удалять категории расходов.
 ''').format(name)
     context.bot.send_message(
         chat_id=chat.id,
@@ -764,7 +764,7 @@ def inline_button_handler(update, context):
                 category=CHOSEN_CATEGORY[-1],
                 author=update.effective_chat
             )
-            
+
         elif CHOSEN_CATEGORY[-1] in categoriesupdate.list_of_author_categories(
             type='expenses',
             author=update.effective_chat

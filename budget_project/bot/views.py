@@ -37,7 +37,7 @@ def get_or_create_user(update_object):
     и возвращает объект User для предоставления права просматривать поля
     только этого полget_expenses_categoriesьзователя.
     """
-    # если пользователь не существует, 
+    # если пользователь не существует,
     # создать два перечня категорий
     if User.objects.filter(
         username=update_object.id,

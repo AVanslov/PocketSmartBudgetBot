@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import render
 
 from bot.models import (
@@ -6,6 +7,7 @@ from bot.models import (
     Income,
     Expense,
 )
+from .filters import IncomeFilter
 from .forms import IncomeForm
 
 
@@ -15,15 +17,21 @@ def dashboard(request):
     title = 'Dashboard'
     # all_incomes = Income.objects.all()
     all_incomes = Income.objects.filter(author=request.user).order_by('-date')
+    #добавим фильтрацию
+    filter = IncomeFilter(request.GET, queryset=all_incomes)
+
+    paginator = Paginator(filter.qs, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     categories = CategoryOfIncomes.objects.all()
     # all_expenses = Expense.objects.filter(author=request.user)
     form = IncomeForm(request.POST or None)
     context = {
         'title': title,
         # 'products': products,
-        'all_incomes': all_incomes,
+        'page_obj': page_obj,
         'categories': categories,
-        # 'expenses': all_expenses,
+        'filter': filter,
         'form': form
     }
     if form.is_valid():

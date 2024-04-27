@@ -4,14 +4,24 @@
     <link href='https://fonts.googleapis.com/css?family=Fredoka One' rel='stylesheet'>
     <link href="https://fonts.cdnfonts.com/css/robert-sans" rel="stylesheet">
     <style>
+      .nav-pills {
+        display: flex;
+        margin: 0 -5px;
+        align-items: center;
+      }
+      
       .main-title{
-        font-family: 'Robert Sans', sans-serif;
+        font-family: 'Fredoka One', sans-serif;
         font-size: 24px;
         padding: 10px 10px 10px 10px;
+        color: #CEE741;
       }
       .nav-item, .nav-link{
-        font-family: 'Robert Sans', sans-serif;
+        font-family: 'Fredoka One', sans-serif;
         font-size: 24px;
+        text-decoration: none;
+        flex: 1 1 auto;
+        margin: 0 5px;
       } 
       .nav-item:active{
         color: #ffffff;
@@ -30,7 +40,7 @@
         color: white;
       }
       th, td {
-        border: 1px solid #ddd; /* Параметры рамки */
+        border: 0px solid #ddd; /* Параметры рамки */
         padding: 4px; /* Поля в ячейках */
         font-family: 'Robert Sans', sans-serif;
         font-size: 16px;
@@ -56,7 +66,7 @@
         border: none;
         border-radius: 15px;
         color: white;
-        width: 16%;
+        width: 200px;
         height: 75px;
         padding: 15px 15px 15px 15px;
         align-self: center;
@@ -64,6 +74,38 @@
         transition-duration: 0.4s;
         display: inline-block;
         font-size: 16px;
+        box-shadow: 5px 2px 2px #0000001f;
+      }
+      .filter-button {
+        background-color: #CEE741; /* Green */
+        border: none;
+        border-radius: 15px;
+        color: white;
+        width: 100px;
+        height: 50px;
+        padding: 15px 15px 15px 15px;
+        align-self: center;
+        text-align: center;
+        transition-duration: 0.4s;
+        display: inline-block;
+        font-size: 16px;
+        box-shadow: 5px 2px 2px #0000001f;
+        margin: 10px 10px 10px 10px;
+      }
+      .signout-button {
+        background-color: #ffffff; /* Green */
+        border: none;
+        border-radius: 15px;
+        color: #CEE741;
+        width: 200px;
+        height: 50px;
+        padding: 15px 15px 15px 15px;
+        align-self: center;
+        text-align: center;
+        transition-duration: 0.4s;
+        display: inline-block;
+        font-size: 16px;
+        box-shadow: 5px 2px 2px #0000001f;
       }
       .button-table {
         background-color: #CEE741; /* Green */
@@ -76,12 +118,13 @@
         transition-duration: 0.4s;
         display: inline-block;
         font-size: 10px;
+        box-shadow: 5px 2px 2px #0000001f;
       }
-      .button-table:hover  {
+      .button-table:hover {
         background-color: #ffffff; /* Green */
         color: #000000;
       }
-      .button:hover {
+      .button:hover, .filter-button:hover {
         background-color: #ffffff; /* Green */
         color: #CEE741;
       }
@@ -89,14 +132,21 @@
         background-color: #CEE741;
         padding: 15px 32px;
         text-align: center;
+        margin: 0px 60px 0px 60px;
+        border-radius: 0px 0px 25px 25px;
       }
       .field-style {
         border:1px solid #ccc; 
         border-radius:15px;
         height:50px;
-        width:200px;
         background-color: #ffffff;
         margin: 10px 10px 10px 50px;
+      }
+      footer{
+        background-color: #f2f2f2;
+        padding: 10px 10px;
+        border-radius: 25px 25px 0px 0px;
+        margin: 0px 60px 0px 60px;
       }
     </style>
   </head>

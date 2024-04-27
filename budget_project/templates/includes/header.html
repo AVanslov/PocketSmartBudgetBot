@@ -3,11 +3,11 @@
   <nav class="navbar shadow-sm">
     <div class="container">
       {% with request.resolver_match.view_name as view_name %}
-        <ul class="nav nav-pills">
+        <ul class="nav-pills">
           <li class="nav-item">
             <a class="nav-link {% if view_name == 'pages:homepage' %} active {% endif %}"
               href="{% url 'pages:homepage' %}">
-              <b>SIMBU</b>
+              SIMBU
             </a>
           </li>
           
@@ -16,12 +16,15 @@
           <li class="nav-item">
             <a class="nav-link {% if view_name == 'webbudget:dashboard' %} active {% endif %}"
               href="{% url 'webbudget:dashboard' %}">
-              <b>Dashboard</b>
+              Dashboard
             </a>
           </li>
           <span class="navbar-text"><b>User: {{ user.username }}</b></span>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}"><b>Sign Out</b></a>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button class="signout-button" type="submit">Sign Out</button>
+          </form>
           </li>
           <!-- Конец блока ссылок для авторизованного пользователя -->
 

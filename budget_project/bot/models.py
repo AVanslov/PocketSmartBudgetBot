@@ -4,22 +4,25 @@ from django.db import models
 User = get_user_model()
 
 
-class CategoriesAbstractModel(models.Model):
+class CategoryAbstractModel(models.Model):
     """
     Абстрактная модель описывает таблицы категорий для доходов и расходов.
     """
     category = models.CharField(default=None, max_length=150)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.category
+
     class Meta:
         abstract = True
 
 
-class CategoriesOfIncomes(CategoriesAbstractModel):
+class CategoryOfIncomes(CategoryAbstractModel):
     pass
 
 
-class CategoriesOfExpenses(CategoriesAbstractModel):
+class CategoryOfExpenses(CategoryAbstractModel):
     pass
 
 
@@ -34,23 +37,21 @@ class MoneyAbstractModel(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-
         abstract = True
+        default_related_name = '%(class)s'
 
 
-class Incomes(MoneyAbstractModel):
+class Income(MoneyAbstractModel):
     category = models.ForeignKey(
-        CategoriesOfIncomes,
+        CategoryOfIncomes,
         on_delete=models.CASCADE,
-        related_name='incomes'
     )
     # pass
 
 
-class Expenses(MoneyAbstractModel):
+class Expense(MoneyAbstractModel):
     category = models.ForeignKey(
-        CategoriesOfExpenses,
+        CategoryOfExpenses,
         on_delete=models.CASCADE,
-        related_name='expenses'
     )
     # pass

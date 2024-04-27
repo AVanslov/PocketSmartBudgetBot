@@ -1,0 +1,39 @@
+<!-- templates/includes/header.html -->
+<header>
+  <nav class="navbar shadow-sm">
+    <div class="container">
+      {% with request.resolver_match.view_name as view_name %}
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'pages:homepage' %} active {% endif %}"
+              href="{% url 'pages:homepage' %}">
+              <b>SIMBU</b>
+            </a>
+          </li>
+          
+          <!-- Это блок ссылок для авторизованного пользователя -->
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'webbudget:dashboard' %} active {% endif %}"
+              href="{% url 'webbudget:dashboard' %}">
+              <b>Dashboard</b>
+            </a>
+          </li>
+          <span class="navbar-text"><b>User: {{ user.username }}</b></span>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}"><b>Sign Out</b></a>
+          </li>
+          <!-- Конец блока ссылок для авторизованного пользователя -->
+
+          <!-- А здесь блок ссылок для неавторизованного пользователя -->
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link{% if view_name == 'login' %} active {% endif %}" href="{% url 'login' %}"><b>Log In</b></a>
+            </li>        
+          {% endif %}
+          <!-- Конец блока ссылок для неавторизованного пользователя -->
+        </ul>
+      {% endwith %}
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href='https://fonts.googleapis.com/css?family=Fredoka One' rel='stylesheet'>
+    <link href="https://fonts.cdnfonts.com/css/robert-sans" rel="stylesheet">
+    <style>
+      .main-title{
+        font-family: 'Robert Sans', sans-serif;
+        font-size: 24px;
+        padding: 10px 10px 10px 10px;
+      }
+      .nav-item, .nav-link{
+        font-family: 'Robert Sans', sans-serif;
+        font-size: 24px;
+      } 
+      .nav-item:active{
+        color: #ffffff;
+      } 
+      .navbar-text{
+        font-family: 'Robert Sans', sans-serif;
+        font-size: 24px;
+        color: #ffffff;
+      }
+      table {
+        width: 100%; /* Ширина таблицы */
+        border-collapse: collapse; /* Убираем двойные рамки */
+      }
+      .table-title{
+        background-color: #CEE741;
+        color: white;
+      }
+      th, td {
+        border: 1px solid #ddd; /* Параметры рамки */
+        padding: 4px; /* Поля в ячейках */
+        font-family: 'Robert Sans', sans-serif;
+        font-size: 16px;
+      }
+      tr:hover {
+        background: #CEE741; /* Цвет фона */
+      }
+      .no-hover {
+        border: 0px solid #ffffff00;
+        background-color: #ffffff00;
+      }
+      .no-hover:hover {
+        border: 0px solid #ffffff00;
+        background-color: #ffffff00;
+      }
+      li {
+        display: inline-block;
+        font-family: 'Fredoka One';
+        font-size: 22px;
+      }
+      .button {
+        background-color: #CEE741; /* Green */
+        border: none;
+        border-radius: 15px;
+        color: white;
+        width: 16%;
+        height: 75px;
+        padding: 15px 15px 15px 15px;
+        align-self: center;
+        text-align: center;
+        transition-duration: 0.4s;
+        display: inline-block;
+        font-size: 16px;
+      }
+      .button-table {
+        background-color: #CEE741; /* Green */
+        border: none;
+        color: white;
+        border-radius: 50%;
+        min-width: 45px;
+        min-height: 45px;
+        text-align: center;
+        transition-duration: 0.4s;
+        display: inline-block;
+        font-size: 10px;
+      }
+      .button-table:hover  {
+        background-color: #ffffff; /* Green */
+        color: #000000;
+      }
+      .button:hover {
+        background-color: #ffffff; /* Green */
+        color: #CEE741;
+      }
+      header{
+        background-color: #CEE741;
+        padding: 15px 32px;
+        text-align: center;
+      }
+      .field-style {
+        border:1px solid #ccc; 
+        border-radius:15px;
+        height:50px;
+        width:200px;
+        background-color: #ffffff;
+        margin: 10px 10px 10px 50px;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "includes/header.html" %}
+    <main>
+      {% block content %}Контента пока нет :({% endblock %}
+    </main>
+    {% include "includes/footer.html" %}
+  </body>
+</html> 

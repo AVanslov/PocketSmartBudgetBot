@@ -1,11 +1,12 @@
 import django_filters
-from bot.models import Income
+from bot.models import Money
 
 
-class IncomeFilter(django_filters.FilterSet):
+class MoneyFilter(django_filters.FilterSet):
 
     class Meta:
-        model = Income
+        model = Money
         fields = [
+            'type',
             'category',
         ]

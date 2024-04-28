@@ -1,6 +1,6 @@
 from django import forms
 
-from bot.models import Income
+from bot.models import Category, Money
 
 
 class IncomeForm(forms.ModelForm):
@@ -10,8 +10,9 @@ class IncomeForm(forms.ModelForm):
             field.widget.attrs['class'] = 'field-style'
 
     class Meta:
-        model = Income
+        model = Money
         fields = (
+            'type',
             'date',
             'category',
             'value',

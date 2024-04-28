@@ -5,12 +5,18 @@
       {% csrf_token %}
       <div style="display: flex; align-content: center;">
         <li><h1 class="main-title">{{ title }}</h1></li>
+        {{ form.media.js }}
         {% for field in form.visible_fields %}
           <div style="flex: 1; padding-left: 25px; align-content: center;">
             <li>{{ field }}</li>
           </div>
         {% endfor %}
-        <input class="button" type="submit" value="Submit">
+        <!-- {{ form.as_p }} -->
+          {% if "/delete/" in request.path %}
+            <input class="button" style="background-color: #e75441;" type="submit" value="Delete">
+          {% else %}
+            <input class="button" type="submit" value="Submit">
+          {% endif %}
       </div>
     </form>
   </div>
@@ -36,26 +42,31 @@
           <th><b>Value</b></th>
           <th><b>Comment</b></th>
         </tr>
-        {% for income in page_obj %}
+        {% for money in page_obj %}
           <tr>
-            <th>{{ income.date }}</th>
-            <th>{{ income.category.category }}</th>
-            <th>{{ income.value }}</th>
-            <th>{{ income.comment }}</th>
+            <th>{{ money.date }}</th>
+            <th>{{ money.category.category }}</th>
+            <th>{{ money.value }}</th>
+            <th>{{ money.comment }}</th>
             <th class="no-hover">
-              <button class="button-table">edit</button>
-              <button class="button-table" style="background-color: #e75441;">delete</button>
+              <form style="display: inline;" action="{% url 'webbudget:edit' money.id %}">
+                <button class="button-table" >edit</button>
+              </form>
+              <form style="display: inline;" action="{% url 'webbudget:delete' money.id %}">
+                <button class="button-table" style="background-color: #e75441;">delete</button>
+              </form>
             </th>
           </tr>
           {% if not forloop.last %}
           {% endif %}
-          {% endfor %}
+        {% endfor %}
           <!-- Подключаем пагинатор -->
         </table>
         {% include "includes/paginator.html" %}
     </div>
     <div style="flex: 1; border-radius: 25px; background-color: #f2f2f2; margin: 10px; padding: 20px;">
       <p class="main-title">Hear will be Graphics</p>
+      <img src="webbudget/media/add_some_data.png" />
     </div>
     <div style="flex: 0.7; border-radius: 25px; background-color: #f2f2f2; margin: 10px; padding: 20px;">
       <table>
@@ -67,6 +78,20 @@
             <th>{{ category.category }}</th>
             <th class="no-hover">
               <button class="button-table">edit</button>
+              <button class="button-table" style="background-color: #e75441;">delete</button>
+            </th>
+          </tr>
+        {% endfor %}
+      </table>
+      <table>
+        <tr class="table-title">
+          <th><b>Categories of Expenses</b></th>
+        </tr>
+        {% for category in expence_categories %}
+          <tr>
+            <th>{{ category.category }}</th>
+            <th class="no-hover">
+              <button class="button-table" >edit</button>
               <button class="button-table" style="background-color: #e75441;">delete</button>
             </th>
           </tr>

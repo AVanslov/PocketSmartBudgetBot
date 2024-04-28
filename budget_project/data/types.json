@@ -1,0 +1,16 @@
+[
+    {
+        "model": "bot.type", 
+        "pk": 1,
+        "fields":{
+            "name": "incomes"
+        }
+    },
+    {
+        "model": "bot.type", 
+        "pk": 2,
+        "fields": {
+            "name": "expenses"
+        }
+    }
+]

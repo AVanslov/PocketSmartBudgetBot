@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card col-4 m-3">
+    <div class="card-header">
+      Регистрация пользователя
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Registrate">
+      </form>
+    </div>
+  </div>
+{% endblock %} 

@@ -1,0 +1,20 @@
+[
+    {
+        "model": "bot.Category", 
+        "pk": 1,
+        "fields":{
+            "type": 1,
+            "category": "Salary",
+            "author": 1
+        }
+    },
+    {
+        "model": "bot.Category", 
+        "pk": 2,
+        "fields": {
+            "type": 2,
+            "category": "Food",
+            "author": 1
+        }
+    }
+]

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
   <head>
     <link href='https://fonts.googleapis.com/css?family=Fredoka One' rel='stylesheet'>
@@ -16,14 +17,14 @@
         padding: 10px 10px 10px 10px;
         color: #CEE741;
       }
-      .nav-item, .nav-link{
+      .nav-item, .nav-link {
         font-family: 'Fredoka One', sans-serif;
         font-size: 24px;
         text-decoration: none;
         flex: 1 1 auto;
         margin: 0 5px;
       } 
-      .nav-item:active{
+      .nav-item:active, .active{
         color: #ffffff;
       } 
       .navbar-text{
@@ -49,25 +50,25 @@
         background: #CEE741; /* Цвет фона */
       }
       .no-hover {
-        border: 0px solid #ffffff00;
-        background-color: #ffffff00;
+        border: 0px solid #f2f2f2;
+        background-color: #f2f2f2;
       }
       .no-hover:hover {
-        border: 0px solid #ffffff00;
-        background-color: #ffffff00;
+        border: 0px solid #f2f2f2;
+        background-color: #f2f2f2;
       }
       li {
         display: inline-block;
         font-family: 'Fredoka One';
-        font-size: 22px;
+        font-size: 18px;
       }
-      .button {
+      .button, .signout-button {
         background-color: #CEE741; /* Green */
         border: none;
         border-radius: 15px;
         color: white;
         width: 200px;
-        height: 75px;
+        height: 50px;
         padding: 15px 15px 15px 15px;
         align-self: center;
         text-align: center;
@@ -92,21 +93,6 @@
         box-shadow: 5px 2px 2px #0000001f;
         margin: 10px 10px 10px 10px;
       }
-      .signout-button {
-        background-color: #ffffff; /* Green */
-        border: none;
-        border-radius: 15px;
-        color: #CEE741;
-        width: 200px;
-        height: 50px;
-        padding: 15px 15px 15px 15px;
-        align-self: center;
-        text-align: center;
-        transition-duration: 0.4s;
-        display: inline-block;
-        font-size: 16px;
-        box-shadow: 5px 2px 2px #0000001f;
-      }
       .button-table {
         background-color: #CEE741; /* Green */
         border: none;
@@ -124,7 +110,7 @@
         background-color: #ffffff; /* Green */
         color: #000000;
       }
-      .button:hover, .filter-button:hover {
+      .button:hover, .filter-button:hover, .signout-button:hover{
         background-color: #ffffff; /* Green */
         color: #CEE741;
       }
@@ -138,15 +124,30 @@
       .field-style {
         border:1px solid #ccc; 
         border-radius:15px;
-        height:50px;
+        height: 40px;
+        width: 100px;
         background-color: #ffffff;
-        margin: 10px 10px 10px 50px;
+        margin: 10px 10px 10px 10px;
       }
       footer{
         background-color: #f2f2f2;
         padding: 10px 10px;
         border-radius: 25px 25px 0px 0px;
         margin: 0px 60px 0px 60px;
+      }
+      .label {
+        font-family: 'Fredoka One', sans-serif;
+        font-size: 18px;
+        color:#CEE741;
+        display: inline-block;
+      }
+      .auth-form {
+        text-align: center;
+        height: auto;
+        margin: 10% 30% 10% 30%;
+        border-radius: 25px;
+        background-color: #f2f2f2;
+        padding: 20px 20px 20px 20px;
       }
     </style>
   </head>

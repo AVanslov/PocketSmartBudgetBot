@@ -40,7 +40,7 @@ def dashboard(request, pk=None):
     expence_categories = Category.objects.filter(type__name='expenses') # категории расходов
     # categories = Category.objects.filter(type__name='incomes', author=request.user) # категории доходов
     # expence_categories = Category.objects.filter(type__name='expenses', author=request.user) # категории расходов
-    # create_grafic(request)
+    create_grafic(request)
     context = {
         'title': title,
         'page_obj': page_obj,

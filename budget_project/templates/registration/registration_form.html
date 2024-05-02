@@ -1,15 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="card col-4 m-3">
-    <div class="card-header">
-      Регистрация пользователя
+  <div class="auth-form">
+    <div class="main-title">
+      Registration
     </div>
-    <div class="card-body">
+    <div>
       <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Registrate">
+        {% for field in form.visible_fields %}
+          <div>
+            {{ field.errors }}
+            <div style="font-family: 'Fredoka One', sans-serif;
+            font-size: 18px;
+            color:#CEE741;">{{ field.label_tag }}</div>
+            <li>{{ field }}</li>
+            {% if field.help_text %}
+              <p class="help" id="{{ field.auto_id }}_helptext">
+                  {{ field.help_text|safe }}
+              </p>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <input class="filter-button" type="submit" value="Registrate">
       </form>
     </div>
   </div>

@@ -1,3 +1,4 @@
+from django.conf import settings
 import matplotlib
 import matplotlib.pyplot as plt
 from bot.models import Money
@@ -9,7 +10,7 @@ def create_grafic(request):
     """
 
     expenses_object_dictinaries = [money for money in Money.objects.filter(type__name='incomes', author=request.user).values()]
-    name_of_file = './media/add_some_data.png'
+    name_of_file =  settings.MEDIA_ROOT / 'add_some_data.png'
 
     dates = set(
             i['date'].strftime("%Y-%m")
@@ -30,15 +31,22 @@ def create_grafic(request):
     xs_dates = [obj['date'] for obj in summed_expenses]
     ys_values = [obj['value'] for obj in summed_expenses]
     # столбчатый график
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans',
+                               'Lucida Grande', 'Verdana']
+    plt.figure(facecolor='#f2f2f2')
+    plt.axes().set_facecolor('#f2f2f2')
     plt.bar(
         xs_dates,
         ys_values,
-        label='Расходы',
+        label='Incomes',
+        color='#CEE741',
     )
-    plt.xlabel('Месяц года')
-    plt.ylabel('Расход, в $.')
-    plt.title('Расходы по месяцам')
+    plt.xlabel('Month')
+    plt.ylabel('Income, in $.')
+    plt.title('Incomes by months')
     plt.legend()
+
 
     plt.savefig(name_of_file)
     file_with_grafics = open(name_of_file, 'rb')

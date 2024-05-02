@@ -19,7 +19,7 @@
               Dashboard
             </a>
           </li>
-          <span class="navbar-text"><b>User: {{ user.username }}</b></span>
+          <span class="navbar-text"><b>Hi, {{ user.username }}!</b></span>
           <li class="nav-item">
             <form method="post" action="{% url 'logout' %}">
               {% csrf_token %}
@@ -32,6 +32,9 @@
           {% else %}
             <li class="nav-item">
               <a class="nav-link{% if view_name == 'login' %} active {% endif %}" href="{% url 'login' %}"><b>Log In</b></a>
+            </li>        
+            <li class="nav-item">
+              <a class="nav-link{% if view_name == 'registration' %} active {% endif %}" href="{% url 'registration' %}"><b>Registration</b></a>
             </li>        
           {% endif %}
           <!-- Конец блока ссылок для неавторизованного пользователя -->

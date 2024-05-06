@@ -19,7 +19,7 @@
               Dashboard
             </a>
           </li>
-          <span class="navbar-text"><b>Hi, {{ user.username }}!</b></span>
+          <span class="navbar-text">Hi, {{ user.username }}!</span>
           <li class="nav-item">
             <form method="post" action="{% url 'logout' %}">
               {% csrf_token %}

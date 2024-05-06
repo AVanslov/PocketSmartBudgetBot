@@ -10,6 +10,7 @@ def create_grafic(request):
     """
 
     expenses_object_dictinaries = [money for money in Money.objects.filter(type__name='incomes', author=request.user).values()]
+
     name_of_file =  settings.MEDIA_ROOT / 'add_some_data.png'
 
     dates = set(
@@ -34,7 +35,7 @@ def create_grafic(request):
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans',
                                'Lucida Grande', 'Verdana']
-    plt.figure(facecolor='#f2f2f2')
+    plt.figure(facecolor='#f2f2f2', figsize=(5, 2.7))
     plt.axes().set_facecolor('#f2f2f2')
     plt.bar(
         xs_dates,
@@ -45,7 +46,10 @@ def create_grafic(request):
     plt.xlabel('Month')
     plt.ylabel('Income, in $.')
     plt.title('Incomes by months')
-    plt.legend()
+    for spine in plt.gca().spines.values():
+        spine.set_visible(False)
+
+    # plt.legend()
 
 
     plt.savefig(name_of_file)

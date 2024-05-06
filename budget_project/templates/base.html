@@ -4,7 +4,55 @@
   <head>
     <link href='https://fonts.googleapis.com/css?family=Fredoka One' rel='stylesheet'>
     <link href="https://fonts.cdnfonts.com/css/robert-sans" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     <style>
+      header{
+        background-color: #CEE741;
+        padding: 15px 32px;
+        height: 5vh;
+        max-height: 50px;
+        text-align: center;
+        margin: 0px 60px 0px 60px;
+        border-radius: 0px 0px 25px 25px;
+      }
+      body {
+        min-height: 100vh;
+      }
+      main {
+        min-height: 90%;
+      }
+      footer{
+        background-color: #f2f2f2;
+        padding: 10px 10px;
+        height: 5vh;
+        max-height: 50px;
+        border-radius: 25px 25px 0px 0px;
+        margin: 0px 60px 0px 60px;
+      }
+      .main-flex-container {
+        display: flex;
+        margin: 10px 50px 10px 50px;
+      }
+      .flex-container {
+        border-radius: 25px;
+        background-color: #f2f2f2;
+        margin: 10px;
+        padding: 20px;
+      }
+      .weight-1-flex-container {
+        flex: 1;
+      }
+      .weight-2-flex-container {
+        flex: 2;
+      }
+      .weight-1_2-flex-container {
+        flex: 1.2;
+      }
+      .weight-0_8-flex-container {
+        flex: 0.8;
+      }
       .nav-pills {
         display: flex;
         margin: 0 -5px;
@@ -12,14 +60,22 @@
       }
       
       .main-title{
-        font-family: 'Fredoka One', sans-serif;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
         font-size: 24px;
+        font-weight: 600;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
         padding: 10px 10px 10px 10px;
         color: #CEE741;
       }
       .nav-item, .nav-link {
-        font-family: 'Fredoka One', sans-serif;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
         font-size: 24px;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
         text-decoration: none;
         flex: 1 1 auto;
         margin: 0 5px;
@@ -28,26 +84,75 @@
         color: #ffffff;
       } 
       .navbar-text{
-        font-family: 'Robert Sans', sans-serif;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
         font-size: 24px;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
         color: #ffffff;
       }
       table {
         width: 100%; /* Ширина таблицы */
         border-collapse: collapse; /* Убираем двойные рамки */
       }
-      .table-title{
+      .table-header th {
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 24px;
+        font-weight: 500;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
+      }
+      .table-title th{
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 18px;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
         background-color: #CEE741;
         color: white;
+      }
+      .tabel-total th {
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 18px;
+        font-weight: 600;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
+      }
+      .tabel-total:hover {
+        background-color: #d1f026;
+      }
+      .right-border-radius-10 {
+        border-radius: 0px 10px 10px 0px;
+      }
+      .left-border-radius-10 {
+        border-radius: 10px 0px 0px 10px;
       }
       th, td {
         border: 0px solid #ddd; /* Параметры рамки */
         padding: 4px; /* Поля в ячейках */
-        font-family: 'Robert Sans', sans-serif;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
         font-size: 16px;
+        font-weight: 300;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
       }
-      tr:hover {
-        background: #CEE741; /* Цвет фона */
+      .table-raw {
+        border: 0px solid #ddd; /* Параметры рамки */
+        padding: 4px; /* Поля в ячейках */
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 16px;
+        font-weight: 300;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
+      }
+      .table-raw:hover {
+        background: #DFF17D;
       }
       .no-hover {
         border: 0px solid #f2f2f2;
@@ -59,22 +164,31 @@
       }
       li {
         display: inline-block;
-        font-family: 'Fredoka One';
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
         font-size: 18px;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
       }
       .button, .signout-button {
         background-color: #CEE741; /* Green */
         border: none;
         border-radius: 15px;
         color: white;
-        width: 200px;
+        width: auto;
         height: 50px;
         padding: 15px 15px 15px 15px;
         align-self: center;
         text-align: center;
         transition-duration: 0.4s;
         display: inline-block;
-        font-size: 16px;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 18px;
+        font-weight: 500;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
         box-shadow: 5px 2px 2px #0000001f;
       }
       .filter-button {
@@ -97,13 +211,13 @@
         background-color: #CEE741; /* Green */
         border: none;
         color: white;
-        border-radius: 50%;
-        min-width: 45px;
-        min-height: 45px;
+        border-radius: 5px 5px 5px 5px;
+        min-width: 5px;
+        min-height: 16px;
         text-align: center;
         transition-duration: 0.4s;
         display: inline-block;
-        font-size: 10px;
+        font-size: 14px;
         box-shadow: 5px 2px 2px #0000001f;
       }
       .button-table:hover {
@@ -114,13 +228,6 @@
         background-color: #ffffff; /* Green */
         color: #CEE741;
       }
-      header{
-        background-color: #CEE741;
-        padding: 15px 32px;
-        text-align: center;
-        margin: 0px 60px 0px 60px;
-        border-radius: 0px 0px 25px 25px;
-      }
       .field-style {
         border:1px solid #ccc; 
         border-radius:15px;
@@ -129,15 +236,13 @@
         background-color: #ffffff;
         margin: 10px 10px 10px 10px;
       }
-      footer{
-        background-color: #f2f2f2;
-        padding: 10px 10px;
-        border-radius: 25px 25px 0px 0px;
-        margin: 0px 60px 0px 60px;
-      }
       .label {
-        font-family: 'Fredoka One', sans-serif;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
         font-size: 18px;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
         color:#CEE741;
         display: inline-block;
       }

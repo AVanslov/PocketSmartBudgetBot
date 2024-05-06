@@ -1,0 +1,37 @@
+[
+    {
+        "model": "bot.Currency", 
+        "pk": 1,
+        "fields":{
+            "name": "EUR"
+        }
+    },
+    {
+        "model": "bot.Currency", 
+        "pk": 2,
+        "fields": {
+            "name": "RSD"
+        }
+    },
+    {
+        "model": "bot.Currency", 
+        "pk": 3,
+        "fields": {
+            "name": "RUB"
+        }
+    },
+    {
+        "model": "bot.Currency", 
+        "pk": 4,
+        "fields": {
+            "name": "TRY"
+        }
+    },
+    {
+        "model": "bot.Currency", 
+        "pk": 5,
+        "fields": {
+            "name": "RON"
+        }
+    }
+]

@@ -1,0 +1,24 @@
+<form method="post">
+  {% csrf_token %}
+  <div style="display: flex; align-content: center;">
+    <li><h1 class="main-title">{{ title }}</h1></li>
+    {{ form.media.js }}
+    {% for field in form.visible_fields %}
+      <div style="flex: 1; padding-left: 25px; align-content: center;">
+        {{ field.errors }}
+        <div class="label">{{ field.label_tag }}</div> <li>{{ field }}</li>
+        {% if field.help_text %}
+          <p class="help" id="{{ field.auto_id }}_helptext">
+            {{ field.help_text|safe }}
+          </p>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <!-- {{ form.as_p }} -->
+      {% if "/delete/" in request.path %}
+        <input class="button" style="background-color: #e75441;" type="submit" value="Delete">
+      {% else %}
+        <input class="button" type="submit" value="Submit">
+      {% endif %}
+  </div>
+</form>

@@ -5,19 +5,19 @@
     <div class="flex-container weight-2-flex-container">
       {% include "includes/money_category_form.html" %}
     </div>
-    <div class="flex-container weight-1-flex-container">
+    <div class="flex-container weight-1-flex-container" >
       <ul>
-        <li style="float: left">
+        <li>
           <div>
             <form action="{% url 'webbudget:currency' %}">
-              <button class="button" >Edit main currency Now:{{ main_currency }}</button>
+              <button class="button" >Edit main currency ({{ main_currency }})</button>
             </form>
           </div>
         </li>
-        <li style="float:right;">
+        <li>
           <div>
             <form action="{% url 'webbudget:category' %}">
-              <button class="button" >Create categories</button>
+              <button class="button" >Edit categories</button>
             </form>
           </div>
         </li>
@@ -26,18 +26,74 @@
   </div>
   
   <div class="main-flex-container">
-    <div class="flex-container weight-1-flex-container">
+    <div class="flex-container weight-1-flex-container" id="box1">
+      <div style="float: right; padding: 0px 0px 0px 20px;">
+        <button class="button-table" onclick="removeElement1()">Hide</button>
+      </div>
       {% include "includes/incomes_expences_table.html" %}
     </div>
     
-    <div class="flex-container weight-1-flex-container">
+    <div class="flex-container weight-1-flex-container" id="box2">
+      <div style="float: right; padding: 0px 0px 10px 20px;">
+        <button class="button-table" onclick="removeElement2()">Hide</button>
+      </div>
       <img src="/media/add_some_data.png"/>
     </div>
     
-    <div class="flex-container weight-1-flex-container">
-      <div class="flex-container weight-1-flex-container">
+    <div class="flex-container weight-1-flex-container" id="box3">
+      <div>
+        <div style="float: right; padding: 0px 0px 0px 20px;">
+          <button class="button-table" onclick="resetElement()">Show All</button>
+        </div>
         {% include "includes/categories_table.html" %}
       </div>
     </div>
   </div>
+
+  <script>
+    function removeElement1() {
+        document.getElementById("box1").style.display = "none";
+    }
+    
+    function removeElement2() {
+        document.getElementById("box2").style.display = "none";
+    }
+    
+    function resetElement() {
+        document.getElementById("box1").style.display = "block";
+        document.getElementById("box2").style.display = "block";
+    }
+  </script> 
 {% endblock %}
+
+<!-- <div class="w3-content test" style="max-width:800px">
+
+  <div class="w3-row-padding w3-center" style="margin:0 -16px">
+    <div class="w3-col w3-border" id="imgbox1" style="width:30%;">
+      <p style="word-wrap: break-word;">
+        <code class="w3-codespan" style="wrap">display:none</code>
+      </p>
+      <img src="img_5terre.jpg" style="width:100%" alt="Italy">
+      <p>
+        <button class="ws-btn w3-block" onclick="removeElement()">Remove</button>
+      </p>
+    </div>
+  <div class="w3-col w3-border" style="width:30%;" id="imgbox2">
+    <p style="word-wrap: break-word;">
+      <code class="w3-codespan">visibility:hidden</code>
+    </p>
+    <img src="img_forest.jpg" style="width:100%" alt="Forest">
+    <p>
+      <button class="ws-btn w3-block" onclick="changeVisibility()">Hide</button>
+    </p>
+  </div>
+
+  <div class="w3-col w3-border" style="width:30%;">
+    <p>Reset</p>
+    <img src="img_lights.jpg" style="width:100%" alt="Lights">
+    <p>
+      <button class="ws-btn w3-block" onclick="resetElement()">Reset All</button>
+    </p>
+  </div>
+
+</div> -->

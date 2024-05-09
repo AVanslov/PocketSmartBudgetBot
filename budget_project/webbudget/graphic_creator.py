@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from bot.models import Money
 import numpy as np
 
-def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file):
+def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request):
     dates = set(
             i['date'].strftime("%Y-%m")
             for i in incomes_object_dictinaries
@@ -36,7 +36,7 @@ def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file):
         color='#CEE741',
     )
     plt.xlabel('Month')
-    plt.ylabel('Income, in $.')
+    plt.ylabel('Income, in {}'.format(request.user.usermaincurrency.main_currency.name))
     plt.title('Incomes by months')
     for spine in plt.gca().spines.values():
         spine.set_visible(False)
@@ -49,7 +49,7 @@ def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file):
     return file_with_grafics
 
 
-def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dictinaries, name_of_file):
+def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dictinaries, name_of_file, request):
     # получить даты из доходов
     incomes_dates = [i['date'] for i in incomes_object_dictinaries]
     # получить даты из расходов
@@ -97,11 +97,10 @@ def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dict
     rects2 = ax.bar(x + width/2, ys_expenses_values, width, label='Расходы')
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    
-    ax.set_ylabel('Сумма')
+    ax.set_ylabel('Incomes and expenses, in {}'.format(request.user.usermaincurrency.main_currency.name))
     ax.set_title('Доходы и расходы')
     ax.set_xticks(x, xs_dates)
-    ax.legend()
+    # ax.legend()
     for spine in plt.gca().spines.values():
         spine.set_visible(False)
 
@@ -125,11 +124,11 @@ def create_grafic(request):
     expenses_object_dictinaries = [money for money in Money.objects.filter(type__name='expenses', author=request.user).values()]
     name_of_file =  settings.MEDIA_ROOT / 'add_some_data.png'
     if incomes_object_dictinaries and not expenses_object_dictinaries:
-        return incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file)
+        return incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request)
     if expenses_object_dictinaries and not incomes_object_dictinaries:
-        return incomes_or_expenses_grafic(expenses_object_dictinaries, name_of_file)
+        return incomes_or_expenses_grafic(expenses_object_dictinaries, name_of_file, request)
     if incomes_object_dictinaries and expenses_object_dictinaries:
-        return incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dictinaries, name_of_file)
+        return incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dictinaries, name_of_file, request)
 
 
 # def create_grafic(chat, group_by: str, value_for_sum: str, type: str = 'bar'):

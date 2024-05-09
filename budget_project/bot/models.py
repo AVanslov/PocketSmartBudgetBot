@@ -1,8 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import UniqueConstraint
+from django.shortcuts import get_object_or_404
 from smart_selects.db_fields import ChainedForeignKey, GroupedForeignKey
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from queryable_properties.properties import queryable_property
 
 User = get_user_model()
 
@@ -84,8 +88,15 @@ class Rate(models.Model):
         on_delete=models.SET_DEFAULT,
         related_name='rates_by_second_currency'
     )
-    rate_sell = models.FloatField()
-    rate_buy = models.FloatField()
+    rate = models.FloatField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['date', 'first_currency', 'second_currency'],
+                name='unique_%(class)s',
+            ),
+        ]
 
 
 class Money(models.Model):
@@ -94,14 +105,18 @@ class Money(models.Model):
     """
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
     comment = models.CharField(default=None, max_length=150)
-    category = ChainedForeignKey(
+    category = GroupedForeignKey(
         Category,
-        chained_field='type',
-        chained_model_field='type',
-        show_all=False,
-        auto_choose=False,
-        sort=True,
+        'type'
     )
+    # category = ChainedForeignKey(
+    #     Category,
+    #     chained_field='type',
+    #     chained_model_field='type',
+    #     show_all=False,
+    #     auto_choose=False,
+    #     sort=True,
+    # )
     value = models.IntegerField(default=0)
     date = models.DateField()
     currency = models.ForeignKey(Currency, default=1, on_delete=models.SET_DEFAULT)
@@ -109,7 +124,24 @@ class Money(models.Model):
 
     def __str__(self):
         return self.type.name
+    
+    @property
+    def value_in_main_currency(self):
+        print(self.currency.id)
+        print(self.author.usermaincurrency.main_currency.id)
+        return round(
+            self.value / get_object_or_404(
+                Rate,
+                date=self.date,
+                first_currency=self.currency.id,
+                second_currency=self.author.usermaincurrency.main_currency.id
+            ).rate,
+            2
+        )
+
 
     class Meta:
         default_related_name = '%(class)s'
         ordering = ('-date',)
+
+    

@@ -2,17 +2,35 @@
 {% load static %}
 {% block content %} 
   <div class="main-flex-container">
-    <div class="flex-container weight-1_2-flex-container">
+    <div class="flex-container weight-2-flex-container">
       {% include "includes/money_category_form.html" %}
+    </div>
+    <div class="flex-container weight-1-flex-container">
+      <ul>
+        <li style="float: left">
+          <div>
+            <form action="{% url 'webbudget:currency' %}">
+              <button class="button" >Edit main currency Now:{{ main_currency }}</button>
+            </form>
+          </div>
+        </li>
+        <li style="float:right;">
+          <div>
+            <form action="{% url 'webbudget:category' %}">
+              <button class="button" >Create categories</button>
+            </form>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
   
   <div class="main-flex-container">
-    <div class="flex-container weight-1_2-flex-container">
+    <div class="flex-container weight-1-flex-container">
       {% include "includes/incomes_expences_table.html" %}
     </div>
     
-    <div class="flex-container weight-0_8-flex-container">
+    <div class="flex-container weight-1-flex-container">
       <img src="/media/add_some_data.png"/>
     </div>
     

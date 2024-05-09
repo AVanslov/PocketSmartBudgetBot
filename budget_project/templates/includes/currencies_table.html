@@ -1,0 +1,21 @@
+<div style="margin: 20px 20% 20px 20%;">
+  <table>
+    <tr class="table-header">
+      <th colspan="4">Currencies rates</th>
+    </tr>
+    <tr class="table-title">
+      <th class="left-border-radius-10">Date</th>
+      <th>Currency 1</th>
+      <th>Currency 2</th>
+      <th class="right-border-radius-10">Rate</th>
+    </tr>
+    {% for currency in currencies %}
+      <tr class="table-raw">
+        <th class="left-border-radius-10">{{ currency.date }}</th>
+        <th>{{ currency.first_currency }}</th>
+        <th>{{ currency.second_currency }}</th>
+        <th class="right-border-radius-10">{{ currency.rate }}</th>
+      </tr>
+    {% endfor %}
+  </table>
+</div>

@@ -32,10 +32,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'bot.apps.BotConfig',
-    'homepage.apps.HomepageConfig',
-    'webbudget.apps.WebbudgetConfig',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +41,10 @@ INSTALLED_APPS = [
     'django_filters',
     'smart_selects',
 
+    'bot.apps.BotConfig',
+    'homepage.apps.HomepageConfig',
+    'webbudget.apps.WebbudgetConfig',
+    'currency.apps.CurrencyConfig',
 ]
 
 MIDDLEWARE = [

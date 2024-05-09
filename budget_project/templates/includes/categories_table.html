@@ -1,20 +1,4 @@
-<div style="margin: 0px 0px 10px 0px;">
-  <div>
-    <div>
-      <p style="width: 45%;" class="label">Main currency {{ main_currency }}</p>
-      <form style="display: inline;" action="{% url 'webbudget:currency' %}">
-        <button style="width: 50%;" class="button" >Edit main currency</button>
-      </form>
-    </div>
-    <div>
-      <form style="display: inline;" action="{% url 'webbudget:category' %}">
-        <button style="width: 100%;" class="button" >Create categories</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div style="margin: 20px 0px 10px 0px;">
+<div>
   <table>
     <tr class="table-header">
       <th colspan="4">Categories of Incomes</th>
@@ -41,11 +25,6 @@
         </th>
       </tr>
     {% endfor %}
-  </table>
-</div>
-
-<div style="margin: 20px 0px 20px 0px;">
-  <table>
     <tr class="table-header">
       <th colspan="4">Categories of Expenses</th>
     </tr>
@@ -73,19 +52,19 @@
     {% endfor %}
       <tr class="tabel-total">
         <th class="left-border-radius-10">Sum of Incomes</th>
-        <th colspan="1">{{ diff_incomes_expenses_values }}</th>
+        <th colspan="1">{{ categories_plan_sum.income_categories_sum }}</th>
         <th>{{ all_incomes_with_sum.sum_incomes_values }}</th>
         <th class="right-border-radius-10">{{ diff_incomes_expenses_values }}</th>
       </tr>
       <tr class="tabel-total">
         <th class="left-border-radius-10">Sum Expenses</th>
-        <th colspan="1">{{ diff_incomes_expenses_values }}</th>
+        <th colspan="1">{{ categories_plan_sum.expense_categories_sum }}</th>
         <th>{{ all_incomes_with_sum.sum_expenses_values }}</th>
         <th class="right-border-radius-10">{{ diff_incomes_expenses_values }}</th>
       </tr>
       <tr class="tabel-total">
         <th class="left-border-radius-10">Total</th>
-        <th colspan="1">{{ diff_incomes_expenses_values }}</th>
+        <th colspan="1">{{ categories_plan_sum.difference }}</th>
         <th>{{ diff_incomes_expenses_values }}</th>
         <th class="right-border-radius-10">{{ diff_incomes_expenses_values }}</th>
       </tr>

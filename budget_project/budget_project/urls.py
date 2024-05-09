@@ -20,6 +20,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
 from django.urls import include, path, reverse_lazy
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('chaining/', include('smart_selects.urls')),
@@ -32,9 +33,10 @@ urlpatterns = [
         ),
         name='registration',
     ),
-    path('auth/', include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('', include('homepage.urls')),
     path('', include('webbudget.urls')),
+    path('', include('currency.urls')),
 ]
 
 if settings.DEBUG:

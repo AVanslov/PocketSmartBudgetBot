@@ -10,8 +10,21 @@ from bot.models import (
 class IncomeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        print(kwargs)
+        
+        author = kwargs['initial']['request']
+        print(author)
+        print(self.fields)
+        print(vars(self.fields['type']))
+        
+        self.fields['category'].queryset = Category.objects.filter(
+            author__id=author.id
+        )
+
         for field in self.fields.values():
             field.widget.attrs['class'] = 'field-style'
+
+    # category = forms.ModelChoiceField(queryset=None)
 
     class Meta:
         model = Money

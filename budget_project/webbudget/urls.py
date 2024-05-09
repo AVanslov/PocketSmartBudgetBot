@@ -5,7 +5,6 @@ app_name = 'webbudget'
 
 
 urlpatterns = [
-    # path('<username>/dashboard/', views.dashboard),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('category/', views.edit_category, name='category'),
     path('category/<int:pk>/edit/', views.edit_category, name='category_edit'),

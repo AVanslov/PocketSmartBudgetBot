@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-flex-container">
+  <div class="flex-container weight-1-flex-container">
+    Hear will be graphics for your main currency
+  </div>
+</div>
+<div class="main-flex-container">
+  <div class="flex-container weight-1-flex-container">
+    {% include "includes/currencies_table.html" %}
+  </div>
+</div>
+{% endblock %}

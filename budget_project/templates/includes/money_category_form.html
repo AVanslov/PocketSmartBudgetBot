@@ -1,5 +1,6 @@
 <form method="post">
   {% csrf_token %}
+
   <div style="display: flex; align-content: center;">
     <li><h1 class="main-title">{{ title }}</h1></li>
     {{ form.media.js }}
@@ -14,7 +15,6 @@
         {% endif %}
       </div>
     {% endfor %}
-    <!-- {{ form.as_p }} -->
       {% if "/delete/" in request.path %}
         <input class="button" style="background-color: #e75441;" type="submit" value="Delete">
       {% else %}

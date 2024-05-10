@@ -1,8 +1,57 @@
 from django.conf import settings
 import matplotlib
 import matplotlib.pyplot as plt
-from bot.models import Money
 import numpy as np
+import datetime
+
+from bot.models import Money
+from . import views
+
+current_month = datetime.datetime.now().month
+
+
+def incomes_by_categories(request):
+    name = str(request.user.username) + '_categories.png'
+    name_of_file =  settings.MEDIA_ROOT / name
+
+    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+
+    print(f'value_in_main_currency {Money.objects.get(id=1).value_in_main_currency}')
+
+    # Money.objects.filter(author=request.user, date)
+    categories = []
+
+    recipe = ["375 g flour","75 g sugar","250 g butter","300 g berries"]
+
+    data = [float(x.split()[0]) for x in recipe]
+    ingredients = [x.split()[-1] for x in recipe]
+
+
+    def func(pct, allvals):
+        absolute = int(np.round(pct/100.*np.sum(allvals)))
+        return f"{pct:.1f}%\n({absolute:d} g)"
+
+
+    wedges, texts, autotexts = ax.pie(
+        data,
+        autopct=lambda pct: func(pct, data),
+        textprops=dict(color="w")
+    )
+
+    ax.legend(wedges, ingredients,
+            title="Ingredients",
+            loc="center left",
+            bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.setp(autotexts, size=8, weight="bold")
+
+    ax.set_title("Matplotlib bakery: A pie")
+
+    plt.savefig(name_of_file)
+    file_with_grafics = open(name_of_file, 'rb')
+    plt.close()
+    return file_with_grafics
+
 
 def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request):
     dates = set(
@@ -11,37 +60,54 @@ def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request
         )
     grouped_expenses = [
         (date, [
-            i['value'] for i in incomes_object_dictinaries
+            i['value_in_main_currency'] for i in incomes_object_dictinaries
             if i['date'].strftime("%Y-%m") == date
         ]) for date in dates
     ]
     summed_expenses = [
         {
             'date': k,
-            'value': sum(v)
+            'value_in_main_currency': sum(v)
         } for k, v in grouped_expenses
     ]
     xs_dates = [obj['date'] for obj in summed_expenses]
-    ys_values = [obj['value'] for obj in summed_expenses]
+    ys_values = [obj['value_in_main_currency'] for obj in summed_expenses]
+
+
     # столбчатый график
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans',
                             'Lucida Grande', 'Verdana']
-    plt.figure(facecolor='#f2f2f2', figsize=(5, 2.7))
+    plt.figure(facecolor='#f2f2f2', figsize=(10, 2))
     plt.axes().set_facecolor('#f2f2f2')
+
+    # plt.subplot(2, 1, 1)
     plt.bar(
         xs_dates,
         ys_values,
         label='Incomes',
         color='#CEE741',
     )
+
     plt.xlabel('Month')
     plt.ylabel('Income, in {}'.format(request.user.usermaincurrency.main_currency.name))
     plt.title('Incomes by months')
     for spine in plt.gca().spines.values():
         spine.set_visible(False)
 
-    # plt.legend()
+    # plt.subplot(2, 1, 2)
+    # plt.bar(
+    #     xs_dates,
+    #     ys_values,
+    #     label='Incomes',
+    #     color='#CEE741',
+    # )
+    # plt.xlabel('Month')
+    # plt.ylabel('Income, in {}'.format(request.user.usermaincurrency.main_currency.name))
+    # plt.title('Incomes by months')
+    # for spine in plt.gca().spines.values():
+    #     spine.set_visible(False)
+
 
     plt.savefig(name_of_file)
     file_with_grafics = open(name_of_file, 'rb')
@@ -63,13 +129,13 @@ def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dict
     dates = set([i.strftime("%Y-%m") for i in incomes_dates])
     grouped = [
         (date, [
-            i['value'] for i in incomes_object_dictinaries
+            i['value_in_main_currency'] for i in incomes_object_dictinaries
             if i['date'].strftime("%Y-%m") == date
         ]) for date in dates
     ]
     grouped_expenses = [
         (date, [
-            i['value'] for i in expenses_object_dictinaries
+            i['value_in_main_currency'] for i in expenses_object_dictinaries
             if i['date'].strftime("%Y-%m") == date
         ]) for date in dates
     ]
@@ -77,30 +143,34 @@ def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dict
     summed = [
         {
             'date': k,
-            'value': sum(v)
+            'value_in_main_currency': sum(v)
         } for k, v in grouped
     ]
     xs_dates = [obj['date'] for obj in summed]
-    ys_values = [obj['value'] for obj in summed]
+    ys_values = [obj['value_in_main_currency'] for obj in summed]
     expenses_summed = [
         {
             'date': k,
-            'value': sum(v)
+            'value_in_main_currency': sum(v)
         } for k, v in grouped_expenses
     ]
-    ys_expenses_values = [obj['value'] for obj in expenses_summed]
+    ys_expenses_values = [obj['value_in_main_currency'] for obj in expenses_summed]
     x = np.arange(len(xs_dates))  # the label locations
     width = 0.35  # the width of the bars
 
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width/2, ys_values, width, label='Доходы')
-    rects2 = ax.bar(x + width/2, ys_expenses_values, width, label='Расходы')
+    # plt.axes().set_facecolor('#f2f2f2')
+    # plt.figure(facecolor='#f2f2f2', figsize=(10, 2))
 
+    fig, ax = plt.subplots(facecolor='#f2f2f2', figsize=(5, 3))
+    rects1 = ax.bar(x - width/2, ys_values, width, label='Incomes', color='#CEE741')
+    rects2 = ax.bar(x + width/2, ys_expenses_values, width, label='Expenses', color='#e75441')
+    
+    ax.set_facecolor('#f2f2f2')
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_ylabel('Incomes and expenses, in {}'.format(request.user.usermaincurrency.main_currency.name))
-    ax.set_title('Доходы и расходы')
+    ax.set_ylabel('{}'.format(request.user.usermaincurrency.main_currency.name))
+    ax.set_title('Incomes and expenses, in {}'.format(request.user.usermaincurrency.main_currency.name))
     ax.set_xticks(x, xs_dates)
-    # ax.legend()
+    ax.legend()
     for spine in plt.gca().spines.values():
         spine.set_visible(False)
 
@@ -120,9 +190,11 @@ def create_grafic(request):
     Создает графики на основе объекта запроса.
     """
 
-    incomes_object_dictinaries = [money for money in Money.objects.filter(type__name='incomes', author=request.user).values()]
-    expenses_object_dictinaries = [money for money in Money.objects.filter(type__name='expenses', author=request.user).values()]
-    name_of_file =  settings.MEDIA_ROOT / 'add_some_data.png'
+
+    incomes_object_dictinaries = [money for money in views.all_money_with_value_in_main_currency(request, type='incomes').values()]
+    expenses_object_dictinaries = [money for money in views.all_money_with_value_in_main_currency(request, type='expenses').values()]
+    name = str(request.user.username) + '_incomes_expenses.png'
+    name_of_file =  settings.MEDIA_ROOT / name
     if incomes_object_dictinaries and not expenses_object_dictinaries:
         return incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request)
     if expenses_object_dictinaries and not incomes_object_dictinaries:

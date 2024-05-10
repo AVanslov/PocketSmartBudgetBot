@@ -13,7 +13,7 @@
       <tr class="table-raw">
         <th class="left-border-radius-10">{{ category.category }}</th>
         <th>{{ category.limit }}</th>
-        <th>{{ category.sum_values }}</th>
+        <th>{{ category.values_in_main_currency }}</th>
         <th class="right-border-radius-10">{{ category.difference }}</th>
         <th class="no-hover">
           <form style="display: inline;" action="{% url 'webbudget:category_edit' category.id %}">

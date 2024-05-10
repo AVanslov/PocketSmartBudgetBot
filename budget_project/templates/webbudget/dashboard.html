@@ -26,6 +26,15 @@
   </div>
   
   <div class="main-flex-container">
+    <div class="flex-container weight-1-flex-container" id="box4">
+      <div style="float: right; padding: 0px 0px 10px 20px;">
+        <button class="button-table" onclick="removeElement4()">Hide</button>
+      </div>
+      <img src="/media/{{username}}_incomes_expenses.png"/>
+    </div>
+  </div>
+
+  <div class="main-flex-container">
     <div class="flex-container weight-1-flex-container" id="box1">
       <div style="float: right; padding: 0px 0px 0px 20px;">
         <button class="button-table" onclick="removeElement1()">Hide</button>
@@ -37,7 +46,11 @@
       <div style="float: right; padding: 0px 0px 10px 20px;">
         <button class="button-table" onclick="removeElement2()">Hide</button>
       </div>
-      <img src="/media/add_some_data.png"/>
+      <div style="align-items: center;">
+        <div style="display: inline-block;">
+          <img src="/media/name_of_file.png"/>
+        </div>
+      </div>
     </div>
     
     <div class="flex-container weight-1-flex-container" id="box3">
@@ -58,10 +71,14 @@
     function removeElement2() {
         document.getElementById("box2").style.display = "none";
     }
+    function removeElement4() {
+        document.getElementById("box4").style.display = "none";
+    }
     
     function resetElement() {
         document.getElementById("box1").style.display = "block";
         document.getElementById("box2").style.display = "block";
+        document.getElementById("box4").style.display = "block";
     }
   </script> 
 {% endblock %}

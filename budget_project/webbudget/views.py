@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.db.models import (
     Avg,
@@ -10,11 +11,12 @@ from django.db.models import (
     FloatField,
     ExpressionWrapper,
     F,
+    Func,
     Q,
     Subquery,
     OuterRef,
 )
-from django.db.models.functions import Round
+from django.db.models.functions import Round, Coalesce
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from pprint import pprint
@@ -28,7 +30,7 @@ from bot.models import (
 )
 from .filters import MoneyFilter
 from .forms import CategoryForm, IncomeForm, UserMainCurrencyForm
-from .graphic_creator import create_grafic
+from .graphic_creator import create_grafic, incomes_by_categories
 
 from django.http import JsonResponse
 from django.core.serializers import serialize
@@ -36,17 +38,69 @@ import json
 
 current_month = datetime.datetime.now().month
 
+def all_money_with_value_in_main_currency(request, type):
+    rate = Rate.objects.filter(
+            date=OuterRef('date'),
+            first_currency=OuterRef('current_first_currency'),
+            second_currency=OuterRef('current_second_currency')
+        )
+
+    return Money.objects.filter(
+        type__name=type,
+        author=request.user
+    ).annotate(
+        current_first_currency=F('currency__id'),
+        current_second_currency=F('author__usermaincurrency__main_currency__id'),
+    ).annotate(
+        value_in_main_currency=ExpressionWrapper(
+            F('value') / Subquery(rate.values('rate')[:1]),
+            output_field=FloatField()
+        )
+    )
+
+
 def income_categories(request):
 
-    sum_values_current_month = Sum('money__value', filter=Q(money__date__month=current_month))
+    rate = Rate.objects.filter(
+        date=OuterRef('date'),
+        first_currency=OuterRef('current_first_currency'),
+        second_currency=OuterRef('current_second_currency')
+    )
+
+    moneys = Money.objects.filter(
+        date__month=current_month,
+        author=request.user,
+        category=OuterRef('id')
+    ).annotate(
+        current_first_currency=F('currency__id'),
+        current_second_currency=F('author__usermaincurrency__main_currency__id'),
+    ).annotate(
+        value_in_main_currency=ExpressionWrapper(
+            F('value') / Subquery(rate.values('rate')[:1]),
+            output_field=FloatField()
+        )
+    ).annotate(
+        total_value=Func('value_in_main_currency', function='Sum', output_field=FloatField())
+        # total_value=Sum('value_in_main_currency', output_field=FloatField())
+    )
+    # print(moneys.values())
 
     categories = Category.objects.filter(
         type__name='incomes',
         author=request.user.id
     ).annotate(
-        sum_values=sum_values_current_month,
-        difference=ExpressionWrapper(F('limit') - F('sum_values'), output_field=IntegerField())
+        # values_in_main_currency=Sum('money__value_in_main_currency')
+
+        values_in_main_currency=Round(
+            Subquery(
+                moneys.values('total_value')
+            ),
+            2
+        ),
+    ).annotate(
+        difference=Round(ExpressionWrapper(F('limit') - F('values_in_main_currency'), output_field=FloatField()), 2)
     ) # категории доходов
+    print(categories.values())
     return categories
 
 def expence_categories(request):
@@ -152,6 +206,7 @@ def dashboard(request, pk=None):
     main_currency = get_object_or_404(UserMainCurrency, author=request.user).main_currency
 
     create_grafic(request)
+    incomes_by_categories(request)
     context = {
         'title': title,
         'page_obj': page_obj,
@@ -162,6 +217,7 @@ def dashboard(request, pk=None):
         'categories_plan_sum': categories_plan_sum(request),
         'main_currency': main_currency,
         'filter': filter,
+        'username': request.user.username,
         'form': form
     }
     if request.method == 'POST':

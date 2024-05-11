@@ -133,8 +133,10 @@ class Money(models.Model):
             self.value / get_object_or_404(
                 Rate,
                 date=self.date,
-                first_currency=self.currency.id,
-                second_currency=self.author.usermaincurrency.main_currency.id
+                first_currency=self.author.usermaincurrency.main_currency.id,
+                second_currency=self.currency.id
+                # first_currency=self.currency.id,
+                # second_currency=self.author.usermaincurrency.main_currency.id
             ).rate,
             2
         )

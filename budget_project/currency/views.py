@@ -10,12 +10,14 @@ from bot.models import (
     Rate,
     UserMainCurrency,
 )
+from webbudget import graphic_creator
 
 today = date.today()
 
 @login_required
 def currencies_rates(request):
     currencies = Rate.objects.filter(date=today)
+    graphic_creator.currencies_grafic()
     context = {
         'currencies': currencies
     }

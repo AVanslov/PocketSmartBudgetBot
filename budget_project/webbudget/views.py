@@ -26,11 +26,12 @@ from bot.models import (
     Money,
     Category,
     Rate,
+    Type,
     UserMainCurrency,
 )
 from .filters import MoneyFilter
 from .forms import CategoryForm, IncomeForm, UserMainCurrencyForm
-from .graphic_creator import create_grafic, incomes_by_categories
+from .graphic_creator import create_grafic, incomes_by_categories, expenses_by_categories
 
 from django.http import JsonResponse
 from django.core.serializers import serialize
@@ -49,17 +50,18 @@ def all_money_with_value_in_main_currency(request, type):
         type__name=type,
         author=request.user
     ).annotate(
-        current_first_currency=F('currency__id'),
-        current_second_currency=F('author__usermaincurrency__main_currency__id'),
+        current_first_currency=F('author__usermaincurrency__main_currency__id'),
+        current_second_currency=F('currency__id'),
     ).annotate(
         value_in_main_currency=ExpressionWrapper(
             F('value') / Subquery(rate.values('rate')[:1]),
             output_field=FloatField()
         )
-    )
+    ).order_by('date')
+        
 
 
-def income_categories(request):
+def categories(request, type):
 
     rate = Rate.objects.filter(
         date=OuterRef('date'),
@@ -72,8 +74,8 @@ def income_categories(request):
         author=request.user,
         category=OuterRef('id')
     ).annotate(
-        current_first_currency=F('currency__id'),
-        current_second_currency=F('author__usermaincurrency__main_currency__id'),
+        current_first_currency=F('author__usermaincurrency__main_currency__id'),
+        current_second_currency=F('currency__id'),
     ).annotate(
         value_in_main_currency=ExpressionWrapper(
             F('value') / Subquery(rate.values('rate')[:1]),
@@ -81,16 +83,12 @@ def income_categories(request):
         )
     ).annotate(
         total_value=Func('value_in_main_currency', function='Sum', output_field=FloatField())
-        # total_value=Sum('value_in_main_currency', output_field=FloatField())
     )
-    # print(moneys.values())
 
     categories = Category.objects.filter(
-        type__name='incomes',
+        type__name=type,
         author=request.user.id
     ).annotate(
-        # values_in_main_currency=Sum('money__value_in_main_currency')
-
         values_in_main_currency=Round(
             Subquery(
                 moneys.values('total_value')
@@ -103,17 +101,6 @@ def income_categories(request):
     print(categories.values())
     return categories
 
-def expence_categories(request):
-    sum_values_current_month = Sum('money__value', filter=Q(money__date__month=current_month))
-
-    expence_categories = Category.objects.filter(
-        type__name='expenses',
-        author=request.user.id
-    ).annotate(
-        sum_values=sum_values_current_month,
-        difference=ExpressionWrapper(F('limit') - F('sum_values'), output_field=IntegerField())
-    ) # категории расходов
-    return expence_categories
 
 def categories_plan_sum(request):
     sum_income_values_current_month = Sum('limit', filter=Q(type__name='incomes'))
@@ -126,7 +113,6 @@ def categories_plan_sum(request):
         expense_categories_sum = sum_expense_values_current_month,
         difference=sum_income_values_current_month - sum_expense_values_current_month
     )
-    # print([i.incomes_sum for i in income_categories_plan_sum])
     print(categories_plan_sum['difference'])
     return categories_plan_sum
 
@@ -138,11 +124,6 @@ def dashboard(request, pk=None):
 
     else:
         instance = None
-
-    # kwargs = {
-    #     'request': request
-    #     }
-    # kwargs.update({'request': request}) # usually with conditionals to specify what gets added
 
 
     form = IncomeForm(request.POST or None, instance=instance, initial={'request': request.user})
@@ -168,18 +149,19 @@ def dashboard(request, pk=None):
     all_incomes_with_sum = Money.objects.filter(
         author=request.user
     ).annotate(
-        current_first_currency=F('currency__id'),
-        current_second_currency=F('author__usermaincurrency__main_currency__id'),
+        current_first_currency=F('author__usermaincurrency__main_currency__id'),
+        current_second_currency=F('currency__id'),
     ).annotate(
         value_in_main_currency=ExpressionWrapper(
             F('value') / Subquery(rate.values('rate')[:1]),
             output_field=FloatField()
-        )
+        ),
     ).aggregate(
         sum_incomes_values = Round(Sum('value_in_main_currency', filter=Q(type__name='incomes')), 2),
         sum_expenses_values = Round(Sum('value_in_main_currency', filter=Q(type__name='expenses')), 2),
     )
 
+    print('all')
     pprint(all_incomes_with_sum)
     pprint(type(all_incomes_with_sum['sum_incomes_values']))
     pprint(type(all_incomes_with_sum['sum_expenses_values']))
@@ -197,6 +179,19 @@ def dashboard(request, pk=None):
             all_incomes_with_sum['sum_expenses_values']
         )
 
+    diff_plan_fact_incomes_values = (
+        categories_plan_sum(request)['income_categories_sum']
+        - all_incomes_with_sum['sum_incomes_values']
+    )
+    diff_plan_fact_expenses_values = (
+        categories_plan_sum(request)['expense_categories_sum']
+        - all_incomes_with_sum['sum_expenses_values']
+    )
+    diff_total_plan_fact_values = (
+        diff_plan_fact_incomes_values
+        - diff_plan_fact_expenses_values
+    )
+
     filter = MoneyFilter(request.GET, queryset=all_incomes)
 
     paginator = Paginator(filter.qs, 10)
@@ -207,13 +202,18 @@ def dashboard(request, pk=None):
 
     create_grafic(request)
     incomes_by_categories(request)
+    expenses_by_categories(request)
+
     context = {
         'title': title,
         'page_obj': page_obj,
-        'categories': income_categories(request),
-        'expence_categories': expence_categories(request),
+        'categories': categories(request, type='incomes'),
+        'expence_categories': categories(request, type='expenses'),
         'all_incomes_with_sum': all_incomes_with_sum,
-        'diff_incomes_expenses_values': diff_incomes_expenses_values,
+        'diff_incomes_expenses_values': round(diff_incomes_expenses_values, 2),
+        'diff_plan_fact_incomes_values': diff_plan_fact_incomes_values,
+        'diff_plan_fact_expenses_values': diff_plan_fact_expenses_values,
+        'diff_total_plan_fact_values': diff_total_plan_fact_values,
         'categories_plan_sum': categories_plan_sum(request),
         'main_currency': main_currency,
         'filter': filter,
@@ -243,8 +243,8 @@ def delete_money(request, pk):
         'title': title,
         # 'products': products,
         'page_obj': page_obj,
-        'categories': income_categories(request),
-        'expence_categories': expence_categories(request),
+        'categories': categories(request, type='incomes'),
+        'expence_categories': categories(request, type='expenses'),
         'filter': filter,
         'form': form
     }
@@ -271,8 +271,8 @@ def edit_category(request, pk=None):
         form.save()
 
     context = {
-        'categories': income_categories(request),
-        'expence_categories': expence_categories(request),
+        'categories': categories(request, type='incomes'),
+        'expence_categories': categories(request, type='expenses'),
         'form': form
     }
     if request.method == 'POST':
@@ -287,8 +287,8 @@ def delete_category(request, pk):
     form = CategoryForm(instance=instance)
 
     context = {
-        'categories': income_categories(request),
-        'expence_categories': expence_categories(request),
+        'categories': categories(request, type='incomes'),
+        'expence_categories': categories(request, type='expenses'),
         'form': form
     }
 
@@ -304,8 +304,8 @@ def main_currency(request):
     form = UserMainCurrencyForm(request.POST or None, instance=instance)
 
     context = {
-        'categories': income_categories(request),
-        'expence_categories': expence_categories(request),
+        'categories': categories(request, type='incomes'),
+        'expence_categories': categories(request, type='expenses'),
         'main_currency': main_currency,
         'form': form
     }

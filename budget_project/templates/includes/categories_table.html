@@ -38,7 +38,7 @@
       <tr class="table-raw">
         <th class="left-border-radius-10">{{ category.category }}</th>
         <th>{{ category.limit }}</th>
-        <th>{{ category.sum_values }}</th>
+        <th>{{ category.values_in_main_currency }}</th>
         <th class="right-border-radius-10">{{ category.difference }}</th>
         <th class="no-hover">
           <form style="display: inline;" action="{% url 'webbudget:category_edit' category.id %}">
@@ -54,19 +54,19 @@
         <th class="left-border-radius-10">Sum of Incomes</th>
         <th colspan="1">{{ categories_plan_sum.income_categories_sum }}</th>
         <th>{{ all_incomes_with_sum.sum_incomes_values }}</th>
-        <th class="right-border-radius-10">{{ diff_incomes_expenses_values }}</th>
+        <th class="right-border-radius-10">{{ diff_plan_fact_incomes_values }}</th>
       </tr>
       <tr class="tabel-total">
         <th class="left-border-radius-10">Sum Expenses</th>
         <th colspan="1">{{ categories_plan_sum.expense_categories_sum }}</th>
         <th>{{ all_incomes_with_sum.sum_expenses_values }}</th>
-        <th class="right-border-radius-10">{{ diff_incomes_expenses_values }}</th>
+        <th class="right-border-radius-10">{{ diff_plan_fact_expenses_values }}</th>
       </tr>
       <tr class="tabel-total">
         <th class="left-border-radius-10">Total</th>
         <th colspan="1">{{ categories_plan_sum.difference }}</th>
         <th>{{ diff_incomes_expenses_values }}</th>
-        <th class="right-border-radius-10">{{ diff_incomes_expenses_values }}</th>
+        <th class="right-border-radius-10">{{ diff_total_plan_fact_values }}</th>
       </tr>
   </table>
 </div>

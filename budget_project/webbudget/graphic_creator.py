@@ -237,7 +237,7 @@ def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dict
     ax.set_facecolor('#f2f2f2')
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel('{}'.format(request.user.usermaincurrency.main_currency.name))
-    ax.set_title('Incomes and expenses, in {}'.format(request.user.usermaincurrency.main_currency.name))
+    # ax.set_title('Incomes and expenses, in {}'.format(request.user.usermaincurrency.main_currency.name))
     ax.set_xticks(x, xs_dates)
     ax.legend()
     for spine in plt.gca().spines.values():

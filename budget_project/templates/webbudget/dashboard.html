@@ -26,27 +26,45 @@
   </div>
   
   <div class="main-flex-container">
-    <div class="flex-container weight-1-flex-container" id="box4">
+    <div class="flex-container weight-1-flex-container" >
       <div style="float: right; padding: 0px 0px 10px 20px;">
-        <button class="button-table" onclick="removeElement4()">Hide</button>
+        <!-- <button class="button-table" onclick="removeElement4()">Hide</button>
+        <button class="button-table" onclick="resetElement4()">Show</button> -->
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round" onclick="resetElement4()"></span>
+        </label>
       </div>
-      <img src="/media/{{username}}_incomes_expenses.png"/>
+      <p class="main-title">Incomes and expenses by months</p>
+      <div id="box4">
+        <img src="/media/{{username}}_incomes_expenses.png"/>
+      </div>  
     </div>
   </div>
 
   <div class="main-flex-container">
-    <div class="flex-container weight-1-flex-container" id="box1">
+    <div class="flex-container weight-1-flex-container">
       <div style="float: right; padding: 0px 0px 0px 20px;">
-        <button class="button-table" onclick="removeElement1()">Hide</button>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round" onclick="resetElement1()"></span>
+        </label>
+        <!-- <button class="button-table" onclick="removeElement1()">Hide</button> -->
       </div>
-      {% include "includes/incomes_expences_table.html" %}
+      <div id="box1">
+        {% include "includes/incomes_expences_table.html" %}
+      </div>
     </div>
     
-    <div class="flex-container weight-1-flex-container" id="box2">
+    <div class="flex-container weight-1-flex-container">
       <div style="float: right; padding: 0px 0px 10px 20px;">
-        <button class="button-table" onclick="removeElement2()">Hide</button>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round" onclick="resetElement2()"></span>
+        </label>
+        <!-- <button class="button-table" onclick="removeElement2()">Hide</button> -->
       </div>
-      <div style="align-items: center;">
+      <div style="align-items: center;" id="box2">
         <div>
           <img src="/media/{{username}}_income_categories.png"/>
         </div>
@@ -56,12 +74,18 @@
       </div>
     </div>
     
-    <div class="flex-container weight-1-flex-container" id="box3">
+    <div class="flex-container weight-1-flex-container">
       <div>
         <div style="float: right; padding: 0px 0px 0px 20px;">
-          <button class="button-table" onclick="resetElement()">Show All</button>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider round" onclick="resetElement3()"></span>
+          </label>
+          <!-- <button class="button-table" onclick="resetElement()">Show All</button> -->
         </div>
-        {% include "includes/categories_table.html" %}
+        <div id="box3">
+          {% include "includes/categories_table.html" %}
+        </div>
       </div>
     </div>
   </div>
@@ -74,14 +98,39 @@
     function removeElement2() {
         document.getElementById("box2").style.display = "none";
     }
-    function removeElement4() {
-        document.getElementById("box4").style.display = "none";
-    }
+    // function removeElement4() {
+    //     document.getElementById("box4").style.display = "none";
+    // }
     
     function resetElement() {
         document.getElementById("box1").style.display = "block";
         document.getElementById("box2").style.display = "block";
         document.getElementById("box4").style.display = "block";
+    }
+
+    function resetElement1() {
+      var x = document.getElementById("box1");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+    }
+    function resetElement2() {
+      var x = document.getElementById("box2");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+    }
+    function resetElement4() {
+      var x = document.getElementById("box4");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
     }
   </script> 
 {% endblock %}

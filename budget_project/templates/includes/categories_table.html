@@ -1,72 +1,89 @@
 <div>
-  <table>
-    <tr class="table-header">
-      <th colspan="4">Categories of Incomes</th>
-    </tr>
-    <tr class="table-title">
-      <th class="left-border-radius-10">Name</th>
-      <th>Plan</th>
-      <th>Fact</th>
-      <th class="right-border-radius-10">Diff</th>
-    </tr>
-    {% for category in categories %}
-      <tr class="table-raw">
-        <th class="left-border-radius-10">{{ category.category }}</th>
-        <th>{{ category.limit }}</th>
-        <th>{{ category.values_in_main_currency }}</th>
-        <th class="right-border-radius-10">{{ category.difference }}</th>
-        <th class="no-hover">
-          <form style="display: inline;" action="{% url 'webbudget:category_edit' category.id %}">
-            <button class="button-table" >edit</button>
-          </form>
-          <form style="display: inline;" action="{% url 'webbudget:category_delete' category.id %}">
-            <button class="button-table" style="background-color: #e75441;">delete</button>
-          </form>
-        </th>
+  <table class="table table-striped table-sm table-hover">
+    <thead>
+      <tr>
+        <th colspan="6" scope="col">Categories of Incomes</th>
       </tr>
-    {% endfor %}
-    <tr class="table-header">
-      <th colspan="4">Categories of Expenses</th>
-    </tr>
-    <tr class="table-title">
-      <th class="left-border-radius-10">Name</th>
-      <th>Plan</th>
-      <th>Fact</th>
-      <th class="right-border-radius-10">Diff</th>
-    </tr>
-    {% for category in expence_categories %}
-      <tr class="table-raw">
-        <th class="left-border-radius-10">{{ category.category }}</th>
-        <th>{{ category.limit }}</th>
-        <th>{{ category.values_in_main_currency }}</th>
-        <th class="right-border-radius-10">{{ category.difference }}</th>
-        <th class="no-hover">
-          <form style="display: inline;" action="{% url 'webbudget:category_edit' category.id %}">
-            <button class="button-table" >edit</button>
-          </form>
-          <form style="display: inline;" action="{% url 'webbudget:category_delete' category.id %}">
-            <button class="button-table" style="background-color: #e75441;">delete</button>
-          </form>
-        </th>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Plan</th>
+        <th scope="col">Fact</th>
+        <th scope="col">Diff</th>
       </tr>
-    {% endfor %}
-      <tr class="tabel-total">
-        <th class="left-border-radius-10">Sum of Incomes</th>
-        <th colspan="1">{{ categories_plan_sum.income_categories_sum }}</th>
-        <th>{{ all_incomes_with_sum.sum_incomes_values }}</th>
-        <th class="right-border-radius-10">{{ diff_plan_fact_incomes_values }}</th>
+    </thead>
+    <tbody>
+      {% for category in categories %}
+        <tr>
+          <th scope="row">{{ category.category }}</th>
+          <td>{{ category.limit }}</td>
+          <td>{{ category.values_in_main_currency }}</td>
+          <td>{{ category.difference }}</td>
+          <td>
+            <form action="{% url 'webbudget:category_edit' category.id %}">
+              <button class="btn btn-primary btn-sm">edit</button>
+            </form>
+          </td>
+          <td>
+            <form action="{% url 'webbudget:category_delete' category.id %}">
+              <button class="btn btn-danger btn-sm">delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+
+    <thead>
+      <tr>
+        <th colspan="6" scope="col">Categories of Expenses</th>
       </tr>
-      <tr class="tabel-total">
-        <th class="left-border-radius-10">Sum Expenses</th>
-        <th colspan="1">{{ categories_plan_sum.expense_categories_sum }}</th>
-        <th>{{ all_incomes_with_sum.sum_expenses_values }}</th>
-        <th class="right-border-radius-10">{{ diff_plan_fact_expenses_values }}</th>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Plan</th>
+        <th scope="col">Fact</th>
+        <th scope="col">Diff</th>
       </tr>
-      <tr class="tabel-total">
-        <th class="left-border-radius-10">Total</th>
-        <th colspan="1">{{ categories_plan_sum.difference }}</th>
-        <th>{{ diff_incomes_expenses_values }}</th>
-        <th class="right-border-radius-10">{{ diff_total_plan_fact_values }}</th>
-      </tr>
+    </thead>
+    <tbody>
+      {% for category in expence_categories %}
+        <tr>
+          <th scope="row">{{ category.category }}</th>
+          <td>{{ category.limit }}</td>
+          <td>{{ category.values_in_main_currency }}</td>
+          <td>{{ category.difference }}</td>
+          <td>
+            <form action="{% url 'webbudget:category_edit' category.id %}">
+              <button class="btn btn-primary btn-sm">edit</button>
+            </form>
+          </td>
+          <td>
+            <form action="{% url 'webbudget:category_delete' category.id %}">
+              <button class="btn btn-danger btn-sm">delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+        <tr>
+          <th scope="row">Sum of Incomes</th>
+          <th colspan="1">{{ categories_plan_sum.income_categories_sum }}</th>
+          <th>{{ all_incomes_with_sum.sum_incomes_values }}</th>
+          <th>{{ diff_plan_fact_incomes_values }}</th>
+          <th colspan="2"></th>
+        </tr>
+        <tr>
+          <th scope="row">Sum Expenses</th>
+          <th colspan="1">{{ categories_plan_sum.expense_categories_sum }}</th>
+          <th>{{ all_incomes_with_sum.sum_expenses_values }}</th>
+          <th>{{ diff_plan_fact_expenses_values }}</th>
+          <th colspan="2"></th>
+        </tr>
+        <tr>
+          <th>Total</th>
+          <th colspan="1">{{ categories_plan_sum.difference }}</th>
+          <th>{{ diff_incomes_expenses_values }}</th>
+          <th>{{ diff_total_plan_fact_values }}</th>
+          <th colspan="2"></th>
+        </tr>
+    </tbody>
   </table>
 </div>

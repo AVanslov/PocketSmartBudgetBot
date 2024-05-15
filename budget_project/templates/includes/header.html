@@ -1,51 +1,50 @@
 <!-- templates/includes/header.html -->
-<header>
-  <nav class="navbar shadow-sm">
-    <div class="container">
-      {% with request.resolver_match.view_name as view_name %}
-        <ul class="nav-pills">
-          <li class="nav-item">
-            <a class="nav-link {% if view_name == 'pages:homepage' %} active {% endif %}"
-              href="{% url 'pages:homepage' %}">
-              SIMBU
-            </a>
-          </li>
-          
-          <!-- Это блок ссылок для авторизованного пользователя -->
-          {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link {% if view_name == 'webbudget:dashboard' %} active {% endif %}"
-              href="{% url 'webbudget:dashboard' %}">
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if view_name == 'webbudget:currencies_rates' %} active {% endif %}"
-              href="{% url 'currency:currencies_rates' %}">
-              Currencies rates
-            </a>
-          </li>
-          <span class="navbar-text">Hi, {{ user.username }}!</span>
-          <li class="nav-item">
-            <form method="post" action="{% url 'logout' %}">
-              {% csrf_token %}
-              <button class="signout-button" type="submit">Sign Out</button>
-          </form>
-          </li>
-          <!-- Конец блока ссылок для авторизованного пользователя -->
+<header class="d-flex justify-content-center py-3">
+{% with request.resolver_match.view_name as view_name %}
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <a href="{% url 'pages:homepage' %}" class="nav-link {% if view_name == 'pages:homepage' %} active {% endif %}">
+        SIMBU
+      </a>
+    </li>
+    
+    <!-- Это блок ссылок для авторизованного пользователя -->
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+      <a href="{% url 'webbudget:dashboard' %}" class="nav-link {% if view_name == 'webbudget:dashboard' %} active {% endif %}">
+        Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'currency:currencies_rates' %}" class="nav-link {% if view_name == 'currency:currencies_rates' %} active {% endif %}">
+        Currencies rates
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link">
+        Hi, {{ user.username }}!
+      </a>
+    </li>
+    <li class="nav-item">
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Sign Out</button>
+      </form>
+    </li>
 
-          <!-- А здесь блок ссылок для неавторизованного пользователя -->
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link{% if view_name == 'login' %} active {% endif %}" href="{% url 'login' %}"><b>Log In</b></a>
-            </li>        
-            <li class="nav-item">
-              <a class="nav-link{% if view_name == 'registration' %} active {% endif %}" href="{% url 'registration' %}"><b>Registration</b></a>
-            </li>        
-          {% endif %}
-          <!-- Конец блока ссылок для неавторизованного пользователя -->
-        </ul>
-      {% endwith %}
-    </div>
-  </nav>
+  <!-- Конец блока ссылок для авторизованного пользователя -->
+
+  <!-- А здесь блок ссылок для неавторизованного пользователя -->
+  {% else %}
+    <li class="nav-item">
+      <a class="nav-link{% if view_name == 'login' %} active {% endif %}" href="{% url 'login' %}"><b>Log In</b></a>
+    </li>        
+    <li class="nav-item">
+      <a class="nav-link{% if view_name == 'registration' %} active {% endif %}" href="{% url 'registration' %}"><b>Registration</b></a>
+    </li>  
+    
+  {% endif %}
+  <!-- Конец блока ссылок для неавторизованного пользователя -->
+{% endwith %}
+  </ul>
 </header>

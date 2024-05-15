@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+:root{
+    --bs-font-sans-serif: "Fredoka", sans-serif !important;
+}
+.btn-primary {
+    color: #fff;
+    background-color: #CEE741 !important;
+    border-color: #CEE741 !important;
+}
+.nav-link.active{
+    color: #fff;
+    background-color: #CEE741 !important;
+}
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #CEE741 !important;
+    border-color: #CEE741 !important;
+}

@@ -1,168 +1,74 @@
 {% extends "base.html" %}
 {% load static %}
-{% block content %} 
-  <div class="main-flex-container">
-    <div class="flex-container weight-2-flex-container">
-      {% include "includes/money_category_form.html" %}
-    </div>
-    <div class="flex-container weight-1-flex-container" >
-      <ul>
-        <li>
-          <div>
-            <form action="{% url 'webbudget:currency' %}">
-              <button class="button" >Edit main currency ({{ main_currency }})</button>
-            </form>
-          </div>
-        </li>
-        <li>
-          <div>
-            <form action="{% url 'webbudget:category' %}">
-              <button class="button" >Edit categories</button>
-            </form>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-  
-  <div class="main-flex-container">
-    <div class="flex-container weight-1-flex-container" >
-      <div style="float: right; padding: 0px 0px 10px 20px;">
-        <!-- <button class="button-table" onclick="removeElement4()">Hide</button>
-        <button class="button-table" onclick="resetElement4()">Show</button> -->
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider round" onclick="resetElement4()"></span>
-        </label>
-      </div>
-      <p class="main-title">Incomes and expenses by months</p>
-      <div id="box4">
-        <img src="/media/{{username}}_incomes_expenses.png"/>
-      </div>  
-    </div>
-  </div>
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    {% include "includes/sidebar.html" %}
 
-  <div class="main-flex-container">
-    <div class="flex-container weight-1-flex-container">
-      <div style="float: right; padding: 0px 0px 0px 20px;">
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider round" onclick="resetElement1()"></span>
-        </label>
-        <!-- <button class="button-table" onclick="removeElement1()">Hide</button> -->
+    <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+      <div style="border-radius: 40px;" class="bg-ligh tp-3">
+        <img src="/media/{{username}}_incomes_expenses.png"/>
       </div>
-      <div id="box1">
+      
+      <div class="table-responsive">
         {% include "includes/incomes_expences_table.html" %}
       </div>
-    </div>
-    
-    <div class="flex-container weight-1-flex-container">
-      <div style="float: right; padding: 0px 0px 10px 20px;">
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider round" onclick="resetElement2()"></span>
-        </label>
-        <!-- <button class="button-table" onclick="removeElement2()">Hide</button> -->
-      </div>
-      <div style="align-items: center;" id="box2">
-        <div>
-          <img src="/media/{{username}}_income_categories.png"/>
-        </div>
-        <div>
-          <img src="/media/{{username}}_expense_categories.png"/>
-        </div>
-      </div>
-    </div>
-    
-    <div class="flex-container weight-1-flex-container">
-      <div>
-        <div style="float: right; padding: 0px 0px 0px 20px;">
-          <label class="switch">
-            <input type="checkbox">
-            <span class="slider round" onclick="resetElement3()"></span>
-          </label>
-          <!-- <button class="button-table" onclick="resetElement()">Show All</button> -->
-        </div>
-        <div id="box3">
+      
+      <div class="row">
+        <div class="col">
           {% include "includes/categories_table.html" %}
         </div>
+        <div class="col">
+          <div>
+            <div>
+              <img src="/media/{{username}}_income_categories.png"/>
+            </div>
+            <div>
+              <img src="/media/{{username}}_expense_categories.png"/>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
+
   </div>
 
-  <script>
-    function removeElement1() {
-        document.getElementById("box1").style.display = "none";
-    }
-    
-    function removeElement2() {
-        document.getElementById("box2").style.display = "none";
-    }
-    // function removeElement4() {
-    //     document.getElementById("box4").style.display = "none";
-    // }
-    
-    function resetElement() {
-        document.getElementById("box1").style.display = "block";
-        document.getElementById("box2").style.display = "block";
-        document.getElementById("box4").style.display = "block";
-    }
+</div>
 
-    function resetElement1() {
-      var x = document.getElementById("box1");
-        if (x.style.display === "none") {
-          x.style.display = "block";
-        } else {
-          x.style.display = "none";
-        }
-    }
-    function resetElement2() {
-      var x = document.getElementById("box2");
-        if (x.style.display === "none") {
-          x.style.display = "block";
-        } else {
-          x.style.display = "none";
-        }
-    }
-    function resetElement4() {
-      var x = document.getElementById("box4");
-        if (x.style.display === "none") {
-          x.style.display = "block";
-        } else {
-          x.style.display = "none";
-        }
-    }
-  </script> 
+<script>
+  function resetElement1() {
+    var x = document.getElementById("box1");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+  }
+  function resetElement2() {
+    var x = document.getElementById("box2");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+  }
+  function resetElement3() {
+    var x = document.getElementById("box3");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+  }
+  function resetElement4() {
+    var x = document.getElementById("box4");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+  }
+</script>
 {% endblock %}
-
-<!-- <div class="w3-content test" style="max-width:800px">
-
-  <div class="w3-row-padding w3-center" style="margin:0 -16px">
-    <div class="w3-col w3-border" id="imgbox1" style="width:30%;">
-      <p style="word-wrap: break-word;">
-        <code class="w3-codespan" style="wrap">display:none</code>
-      </p>
-      <img src="img_5terre.jpg" style="width:100%" alt="Italy">
-      <p>
-        <button class="ws-btn w3-block" onclick="removeElement()">Remove</button>
-      </p>
-    </div>
-  <div class="w3-col w3-border" style="width:30%;" id="imgbox2">
-    <p style="word-wrap: break-word;">
-      <code class="w3-codespan">visibility:hidden</code>
-    </p>
-    <img src="img_forest.jpg" style="width:100%" alt="Forest">
-    <p>
-      <button class="ws-btn w3-block" onclick="changeVisibility()">Hide</button>
-    </p>
-  </div>
-
-  <div class="w3-col w3-border" style="width:30%;">
-    <p>Reset</p>
-    <img src="img_lights.jpg" style="width:100%" alt="Lights">
-    <p>
-      <button class="ws-btn w3-block" onclick="resetElement()">Reset All</button>
-    </p>
-  </div>
-
-</div> -->

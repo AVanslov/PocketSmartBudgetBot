@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
@@ -25,12 +26,12 @@ def currencies_grafic():
     print(data)
     print(dates)
 
-    fig = plt.figure(facecolor='#f2f2f2', figsize=(10, 2))
+    fig = plt.figure(facecolor='#fff', figsize=(10, 2))
     # plt.axes().set_facecolor('#f2f2f2')
     ax = fig.add_subplot(1, 1, 1)
     for i, pair in enumerate(data):
         ax.plot(dates[i], pair)
-        ax.set_facecolor('#f2f2f2')
+        ax.set_facecolor('#fff')
     
     ax.set_title("Currencies")
     ax.legend()
@@ -56,7 +57,7 @@ def incomes_by_categories(request):
 
     # colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, len(data)))
 
-    fig, ax = plt.subplots(figsize=(5, 2), subplot_kw=dict(aspect="equal"),facecolor='#f2f2f2')
+    fig, ax = plt.subplots(figsize=(5, 2), subplot_kw=dict(aspect="equal"),facecolor='#fff')
 
     def func(pct, allvals):
         absolute = int(np.round(pct/100.*np.sum(allvals)))
@@ -93,7 +94,7 @@ def expenses_by_categories(request):
     data = [category.values_in_main_currency for category in views.categories(request, type='expenses') if category.values_in_main_currency is not None]
     categories_name = [category.category for category in views.categories(request, type='expenses') if category.values_in_main_currency is not None]
 
-    fig, ax = plt.subplots(figsize=(5, 2), subplot_kw=dict(aspect="equal"),facecolor='#f2f2f2')
+    fig, ax = plt.subplots(figsize=(5, 2), subplot_kw=dict(aspect="equal"),facecolor='#fff')
 
     def func(pct, allvals):
         absolute = int(np.round(pct/100.*np.sum(allvals)))
@@ -147,8 +148,8 @@ def incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans',
                             'Lucida Grande', 'Verdana']
-    plt.figure(facecolor='#f2f2f2', figsize=(10, 2))
-    plt.axes().set_facecolor('#f2f2f2')
+    plt.figure(facecolor='#fff', figsize=(10, 2))
+    plt.axes().set_facecolor('#fff')
 
     # plt.subplot(2, 1, 1)
     plt.bar(
@@ -230,11 +231,11 @@ def incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dict
     # plt.axes().set_facecolor('#f2f2f2')
     # plt.figure(facecolor='#f2f2f2', figsize=(10, 2))
 
-    fig, ax = plt.subplots(facecolor='#f2f2f2', figsize=(5, 3))
+    fig, ax = plt.subplots(facecolor='#fff', figsize=(5, 3))
     rects1 = ax.bar(x - width/2, ys_values, width, label='Incomes', color='#CEE741')
     rects2 = ax.bar(x + width/2, ys_expenses_values, width, label='Expenses', color='#e75441')
     
-    ax.set_facecolor('#f2f2f2')
+    ax.set_facecolor('#fff')
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel('{}'.format(request.user.usermaincurrency.main_currency.name))
     # ax.set_title('Incomes and expenses, in {}'.format(request.user.usermaincurrency.main_currency.name))

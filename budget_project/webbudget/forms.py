@@ -22,7 +22,7 @@ class IncomeForm(forms.ModelForm):
         )
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'field-style'
+            field.widget.attrs['class'] = 'form-control'
 
     # category = forms.ModelChoiceField(queryset=None)
 
@@ -44,7 +44,7 @@ class CategoryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'field-style'
+            field.widget.attrs['class'] = 'form-control'
 
     class Meta:
         model=Category
@@ -59,7 +59,7 @@ class UserMainCurrencyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'field-style'
+            field.widget.attrs['class'] = 'form-control'
 
     class Meta:
         model = UserMainCurrency

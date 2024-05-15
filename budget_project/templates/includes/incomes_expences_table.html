@@ -1,66 +1,81 @@
-<div style="height: 70px;">
+<div>
   <form method="get">
-    {% for field in filter.form.visible_fields %}
-      <div style="float: left; padding: 10px 10px 10px 10px ;">
+    <div class="row">
+      <!-- {{ filter.form }} -->
+      {% for field in filter.form.visible_fields %}
+      <div class="col">
         {{ field }}
       </div>
-    {% endfor %}
-    <!-- <div style="float: right; padding-top: 10px;"> -->
-    <div>
-      <button class="button" type="submit">Filter</button>
+      {% endfor %}
+      <div class="col-8">
+        <button class="btn btn-primary" type="submit">Filter</button>
+      </div>
     </div>
+    <!-- {{ filter.form }}
+      <div style="float: left; display: inline; padding: 10px 10px 10px 10px ;">
+      </div> -->
+    <!-- <div style="float: right; padding-top: 10px;"> -->
   </form>
 </div>
 
 <div>
-  <table>
-    <tr class="table-title">
-      <th class="left-border-radius-10">Date</th>
-      <th>Category</th>
-      <th>Value</th>
-      <th>Currency</th>
-      <th>{{ main_currency }}</th>
-      <th class="right-border-radius-10">Comment</th>
-    </tr>
-    {% for money in page_obj %}
-    <tr class="table-raw">
-      <th class="left-border-radius-10">{{ money.date }}</th>
-      <th>{{ money.category.category }}</th>
-      <th>{{ money.value }}</th>
-      <th>{{ money.currency }}</th>
-      <th>{{ money.value_in_main_currency }}</th>
-      <th class="right-border-radius-10">{{ money.comment }}</th>
-      <th class="no-hover">
-        <form style="display: inline;" action="{% url 'webbudget:edit' money.id %}">
-          <button class="button-table" >edit</button>
-        </form>
-        <form style="display: inline;" action="{% url 'webbudget:delete' money.id %}">
-          <button class="button-table" style="background-color: #e75441;">delete</button>
-        </form>
-      </th>
-    </tr>
-    {% if not forloop.last %}
-    {% endif %}
-    {% endfor %}
-    <!-- Подключаем пагинатор -->
-    <tr class="tabel-total">
-      <th class="left-border-radius-10">Sum of Incomes</th>
-      <th colspan="3"></th>
-      <th>{{ all_incomes_with_sum.sum_incomes_values }}</th>
-      <th class="right-border-radius-10"></th>
-    </tr>
-    <tr class="tabel-total">
-      <th class="left-border-radius-10">Sum Expenses</th>
-      <th colspan="3"></th>
-      <th>{{ all_incomes_with_sum.sum_expenses_values }}</th>
-      <th class="right-border-radius-10"></th>
-    </tr>
-    <tr class="tabel-total">
-      <th class="left-border-radius-10">Total</th>
-      <th colspan="3"></th>
-      <th>{{ diff_incomes_expenses_values }}</th>
-      <th class="right-border-radius-10"></th>
-    </tr>
+  <!-- <table class="table table-hover"> -->
+  <table class="table table-striped table-sm table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Category</th>
+        <th scope="col">Value</th>
+        <th scope="col">Currency</th>
+        <th scope="col">{{ main_currency }}</th>
+        <th scope="col">Comment</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for money in page_obj %}
+        <tr>
+          <th scope="row">{{ money.date }}</th>
+          <td>{{ money.category.category }}</td>
+          <td>{{ money.value }}</td>
+          <td>{{ money.currency }}</td>
+          <td>{{ money.value_in_main_currency }}</td>
+          <td>{{ money.comment }}</td>
+          <td>
+            <form action="{% url 'webbudget:edit' money.id %}">
+              <button class="btn btn-primary btn-sm" >edit</button>
+            </form>
+          </td>
+          <td>
+            <form action="{% url 'webbudget:delete' money.id %}">
+              <button class="btn btn-danger btn-sm">delete</button>
+            </form>
+          </td>
+        </tr>
+      {% if not forloop.last %}
+      {% endif %}
+      {% endfor %}
+      <!-- Подключаем пагинатор -->
+        <tr>
+          <th>Sum of Incomes</th>
+          <th colspan="3"></th>
+          <th>{{ all_incomes_with_sum.sum_incomes_values }}</th>
+          <th colspan="3"></th>
+        </tr>
+        <tr>
+        <th>Sum Expenses</th>
+        <th colspan="3"></th>
+        <th>{{ all_incomes_with_sum.sum_expenses_values }}</th>
+        <th colspan="3"></th>
+      </tr>
+      <tr class="tabel-total">
+        <th>Total</th>
+        <th colspan="3"></th>
+        <th>{{ diff_incomes_expenses_values }}</th>
+        <th colspan="3"></th>
+      </tr>
+    </tbody>
   </table>
 </div>
 {% include "includes/paginator.html" %}

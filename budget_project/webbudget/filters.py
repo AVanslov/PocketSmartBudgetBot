@@ -12,11 +12,11 @@ class MoneyFilter(django_filters.FilterSet):
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
             super(MoneyFilter, self).__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-            self.filters['type'].field.widget.attrs.update({'class': 'field-style'})
+            self.filters['type'].field.widget.attrs.update({'class': 'form-control'})
 
     date = django_filters.DateFromToRangeFilter(widget=RangeWidget(attrs={
         'type': 'date',
-        'class': 'field-style'
+        'class': 'form-control'
     }))
 
 

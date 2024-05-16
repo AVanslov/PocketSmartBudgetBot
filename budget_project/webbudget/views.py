@@ -204,6 +204,9 @@ def dashboard(request, pk=None):
     incomes_by_categories(request)
     expenses_by_categories(request)
 
+    instance = get_object_or_404(UserMainCurrency, author=request.user)
+    set_currency_form = UserMainCurrencyForm(request.POST or None, instance=instance)
+
     context = {
         'title': title,
         'page_obj': page_obj,
@@ -218,8 +221,11 @@ def dashboard(request, pk=None):
         'main_currency': main_currency,
         'filter': filter,
         'username': request.user.username,
-        'form': form
+        'form': form,
+        'set_currency_form': set_currency_form,
     }
+    if set_currency_form.is_valid():
+        set_currency_form.save()
     if request.method == 'POST':
         return redirect('webbudget:dashboard')
     return render(request, 'webbudget/dashboard.html', context)
@@ -239,6 +245,9 @@ def delete_money(request, pk):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    instance = get_object_or_404(UserMainCurrency, author=request.user)
+    set_currency_form = UserMainCurrencyForm(request.POST or None, instance=instance)
+
     context = {
         'title': title,
         # 'products': products,
@@ -246,8 +255,11 @@ def delete_money(request, pk):
         'categories': categories(request, type='incomes'),
         'expence_categories': categories(request, type='expenses'),
         'filter': filter,
-        'form': form
+        'form': form,
+        'set_currency_form': set_currency_form,
     }
+    if set_currency_form.is_valid():
+        set_currency_form.save()
 
     if request.method == 'POST':
         instance.delete()
@@ -270,11 +282,22 @@ def edit_category(request, pk=None):
         new_post.author = request.user
         form.save()
 
+    instance = get_object_or_404(UserMainCurrency, author=request.user)
+    set_currency_form = UserMainCurrencyForm(request.POST or None, instance=instance)
+
+    title = 'Category'
+
     context = {
+        'title': title,
         'categories': categories(request, type='incomes'),
         'expence_categories': categories(request, type='expenses'),
-        'form': form
+        'form': form,
+        'set_currency_form': set_currency_form,
     }
+
+    if set_currency_form.is_valid():
+        set_currency_form.save()
+
     if request.method == 'POST':
         return redirect('webbudget:category')
 
@@ -286,11 +309,21 @@ def delete_category(request, pk):
     instance = get_object_or_404(Category, pk=pk)
     form = CategoryForm(instance=instance)
 
+    instance = get_object_or_404(UserMainCurrency, author=request.user)
+    set_currency_form = UserMainCurrencyForm(request.POST or None, instance=instance)
+
+    title = 'Category'
+
     context = {
+        'title': title,
         'categories': categories(request, type='incomes'),
         'expence_categories': categories(request, type='expenses'),
-        'form': form
+        'form': form,
+        'set_currency_form': set_currency_form,
     }
+
+    if set_currency_form.is_valid():
+        set_currency_form.save()
 
     if request.method == 'POST':
         instance.delete()
@@ -301,19 +334,19 @@ def delete_category(request, pk):
 @login_required
 def main_currency(request):
     instance = get_object_or_404(UserMainCurrency, author=request.user)
-    form = UserMainCurrencyForm(request.POST or None, instance=instance)
+    set_currency_form = UserMainCurrencyForm(request.POST or None, instance=instance)
 
     context = {
         'categories': categories(request, type='incomes'),
         'expence_categories': categories(request, type='expenses'),
         'main_currency': main_currency,
-        'form': form
+        'set_currency_form': set_currency_form
     }
 
-    if form.is_valid():
-        form.save()
+    if set_currency_form.is_valid():
+        set_currency_form.save()
 
     if request.method == 'POST':
         return redirect('webbudget:dashboard')
 
-    return render(request, 'webbudget/category.html', context)
+    return render(request, 'webbudget/dashboard.html', context)

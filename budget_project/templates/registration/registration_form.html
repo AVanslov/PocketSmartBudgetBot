@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="auth-form">
-    <div class="main-title">
-      Registration
+
+<div class="container" style="margin-top: 15% ;">
+  <div class="row align-items-center" >
+    
+    <div class="col-md-6 text-center offset-md-3 bg-light rounded-3 p-5 border-end">
+      <div class="row m-3">
+        <form method="post">
+          <h1 class="h3 mb-3 fw-normal">Registration</h1>
+          {% csrf_token %}
+          {{ form.as_p }}
+  
+          <input class=" btn btn-primary" type="submit" value="Registrate">
+          <a class="btn btn-outline-success bx-1" href="{% url 'login' %}" role="button">Log in</a>
+          <a class="btn btn-outline-primary" href="{% url 'pages:homepage' %}" role="button">Main page</a>
+          <!-- Этот тег надо будет перенести в нашу форму. -->
+          <input type="hidden" name="next" value="{{ next }}">
+        </form>
+      </div>
+      <!-- <div class="row m-3"> -->
+      <!-- </div> -->
+      
     </div>
-    <div>
-      <form method="post">
-        {% csrf_token %}
-        {% for field in form.visible_fields %}
-          <div>
-            {{ field.errors }}
-            <div style="font-family: 'Fredoka One', sans-serif;
-            font-size: 18px;
-            color:#CEE741;">{{ field.label_tag }}</div>
-            <li>{{ field }}</li>
-            {% if field.help_text %}
-              <p class="help" id="{{ field.auto_id }}_helptext">
-                  {{ field.help_text|safe }}
-              </p>
-            {% endif %}
-          </div>
-        {% endfor %}
-        <input class="filter-button" type="submit" value="Registrate">
-      </form>
-    </div>
+
   </div>
+</div>
+
 {% endblock %} 

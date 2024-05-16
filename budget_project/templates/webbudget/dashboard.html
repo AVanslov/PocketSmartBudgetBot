@@ -7,35 +7,47 @@
 
     <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
-      <div style="border-radius: 40px;" class="bg-ligh tp-3">
-        <img src="/media/{{username}}_incomes_expenses.png"/>
-      </div>
-      
-      <div class="table-responsive">
-        {% include "includes/incomes_expences_table.html" %}
-      </div>
-      
       <div class="row">
-        <div class="col">
+        <div style="background-color: #f2f2f2;" class="col rounded-3 my-3 ms-3 p-3 border-end">
+          <img src="/media/{{username}}_incomes_expenses.png"/>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div style="background-color: #f2f2f2;" class="col ms-3 p-3 rounded-3 border-end">
+          <div class="table-responsive">
+            {% include "includes/incomes_expences_table.html" %}
+          </div>
+        </div>
+        <div style="background-color: #f2f2f2;" class="col mx-3 p-3 rounded-3 border-end">
           {% include "includes/categories_table.html" %}
         </div>
-        <div class="col">
+        <div style="background-color: #f2f2f2;" class="col p-3 rounded-3 border-end">
           <div>
-            <div>
-              <img src="/media/{{username}}_income_categories.png"/>
-            </div>
-            <div>
-              <img src="/media/{{username}}_expense_categories.png"/>
-            </div>
+            <img src="/media/{{username}}_income_categories.png"/>
+          </div>
+          <div>
+            <img src="/media/{{username}}_expense_categories.png"/>
           </div>
         </div>
       </div>
+
+      <!-- </div> -->
+      <!-- <div style="background-color: bisque; border-radius: 40px;" class="mb-3 p-3">
+      </div> -->
+      
+      <!-- <div class="row"> -->
+        <!-- <div style="background-color: bisque; border-radius: 40px;" class="col ms-3 p-3">
+        </div> -->
+      <!-- </div> -->
 
     </div>
 
   </div>
 
 </div>
+
+
 
 <script>
   function resetElement1() {

@@ -11,10 +11,6 @@
         <button class="btn btn-primary" type="submit">Filter</button>
       </div>
     </div>
-    <!-- {{ filter.form }}
-      <div style="float: left; display: inline; padding: 10px 10px 10px 10px ;">
-      </div> -->
-    <!-- <div style="float: right; padding-top: 10px;"> -->
   </form>
 </div>
 
@@ -36,7 +32,7 @@
     <tbody>
       {% for money in page_obj %}
         <tr>
-          <th scope="row">{{ money.date }}</th>
+          <th scope="row">{{ money.date|date:"d.m.y" }}</th>
           <td>{{ money.category.category }}</td>
           <td>{{ money.value }}</td>
           <td>{{ money.currency }}</td>
@@ -44,6 +40,9 @@
           <td>{{ money.comment }}</td>
           <td>
             <form action="{% url 'webbudget:edit' money.id %}">
+              <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                edit-m
+              </button> -->
               <button class="btn btn-primary btn-sm" >edit</button>
             </form>
           </td>

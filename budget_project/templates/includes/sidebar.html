@@ -1,14 +1,19 @@
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse m-3 p-3 rounded-3">
   <div class="position-sticky p-3">
-    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+    <a href="{% url 'pages:homepage' %}" class="d-flex align-items-center mb-md-0 me-md-auto text-center link-dark text-decoration-none">
+      <!-- <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg> -->
+      <span class="fs-2">SIMBU</span>
+    </a>
+    <hr>
+    <a href="{% url 'webbudget:dashboard' %}" class="d-flex align-items-center mb-md-0 me-md-auto text-center link-dark text-decoration-none">
       <!-- <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg> -->
       <span class="fs-4">{{ title }}</span>
     </a>
     <hr>
-    <div class="p-5">
+    {% include "includes/dashboard_menu.html" %}
+    <div class="p-1">
       {% include "includes/money_category_form.html" %}
     </div>
-    {% include "includes/dashboard_menu.html" %}
     <hr>
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">

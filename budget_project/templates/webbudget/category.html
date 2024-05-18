@@ -5,9 +5,14 @@
   <div class="row">
     {% include "includes/sidebar.html" %}
 
-    
     <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-
+      {% if "/edit/" in request.path or "/delete/" in request.path%}
+        <div class="row justify-content-md-center">
+          <div style="background-color: #f2f2f2; margin-top: 10vh !important;" class="col-lg-3 rounded-3 my-3 ms-3 p-3 border-end">
+            {% include "includes/money_category_form.html" %}
+          </div>
+        </div>
+      {% else %}
       <div class="row">
         <div style="background-color: #f2f2f2;" class="col rounded-3 mt-3 ms-3 p-3 border-end">
           Grafic
@@ -16,18 +21,13 @@
 
       <div class="row">
         <div style="background-color: #f2f2f2;" class="col rounded-3 my-3 ms-3 p-3 border-end">
-          Table with incomes and expenses by categories in this year grouped by months
-        </div>
-      </div>
-
-      <div class="row">
-        <div style="background-color: #f2f2f2;" class="col rounded-3 mb-3 ms-3 p-3 border-end">
           <div class="table-responsive">
-            {% include "includes/categories_table.html" %}
+            {% include "includes/categories_by_each_month_table.html" %}
           </div>
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

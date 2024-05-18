@@ -1,14 +1,14 @@
 <div>
   <form method="get">
-    <div class="row">
+    <div class="row align-items-center">
       <!-- {{ filter.form }} -->
       {% for field in filter.form.visible_fields %}
-      <div class="col">
+      <div class="col w-100">
         {{ field }}
       </div>
       {% endfor %}
-      <div class="col-8">
-        <button class="btn btn-primary" type="submit">Filter</button>
+      <div class="col w-100">
+        <button class="btn btn-primary w-100" type="submit">Filter</button>
       </div>
     </div>
   </form>
@@ -25,8 +25,11 @@
         <th scope="col">Currency</th>
         <th scope="col">{{ main_currency }}</th>
         <th scope="col">Comment</th>
-        <th></th>
-        <th></th>
+        <th colspan="2">
+          <button type="button" class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+            Add income or expence
+          </button>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -40,9 +43,6 @@
           <td>{{ money.comment }}</td>
           <td>
             <form action="{% url 'webbudget:edit' money.id %}">
-              <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-                edit-m
-              </button> -->
               <button class="btn btn-primary btn-sm" >edit</button>
             </form>
           </td>

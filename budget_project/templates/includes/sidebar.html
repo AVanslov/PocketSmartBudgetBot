@@ -2,7 +2,7 @@
   <div class="position-sticky p-3">
     <a href="{% url 'pages:homepage' %}" class="d-flex align-items-center mb-md-0 me-md-auto text-center link-dark text-decoration-none">
       <!-- <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg> -->
-      <span class="fs-2">SIMBU</span>
+      <h1 class="fs-2 text-success">SIMBU</h1>
     </a>
     <hr>
     <a href="{% url 'webbudget:dashboard' %}" class="d-flex align-items-center mb-md-0 me-md-auto text-center link-dark text-decoration-none">
@@ -11,14 +11,14 @@
     </a>
     <hr>
     {% include "includes/dashboard_menu.html" %}
-    <div class="p-1">
+    <!-- <div class="p-1">
       {% include "includes/money_category_form.html" %}
-    </div>
+    </div> -->
     <hr>
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-        <strong>mdo</strong>
+        <img src="https://avatars.githubusercontent.com/u/145268320?v=4" alt="" width="32" height="32" class="rounded-circle me-2">
+        <strong>{{ request.user.username }}</strong>
       </a>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
         <li><a class="dropdown-item" href="#">New project...</a></li>

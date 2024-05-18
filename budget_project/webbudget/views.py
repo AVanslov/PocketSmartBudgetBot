@@ -40,6 +40,10 @@ import json
 current_month = datetime.datetime.now().month
 
 def all_money_with_value_in_main_currency(request, type):
+    """
+    Return user`s money objects in user`s main currency.
+    """
+
     rate = Rate.objects.filter(
             date=OuterRef('date'),
             first_currency=OuterRef('current_first_currency'),
@@ -62,47 +66,83 @@ def all_money_with_value_in_main_currency(request, type):
 
 
 def categories(request, type):
+    """
+    Return the user's categories with the total value in the user's primary currency
+    for each category, as
+    well as the difference between the limit set by each user
+    for the category and the actual income and expenses.
+    """
 
     rate = Rate.objects.filter(
-        date=OuterRef('date'),
-        first_currency=OuterRef('current_first_currency'),
-        second_currency=OuterRef('current_second_currency')
+        date=OuterRef('date'), # Получаем дату текущего родительского объекта
+        first_currency=OuterRef('current_first_currency'), # Получаем первую валюту в паре (она же главная валюта пользователя) текущего родительского объекта
+        second_currency=OuterRef('current_second_currency') # Получаем вторую валюту в паре (она же валюта родительского объекта модели Money)
     )
 
     moneys = Money.objects.filter(
-        date__month=current_month,
+        # date__month=current_month, #data__year=current_year
         author=request.user,
+        # Говорим, что ID категории смотреть в родительском Queryset
         category=OuterRef('id')
     ).annotate(
+        # Получаем id объекта главной валюты
         current_first_currency=F('author__usermaincurrency__main_currency__id'),
+        # Получаем id объекта валюты текущей денежной операции
         current_second_currency=F('currency__id'),
     ).annotate(
+        # Вычисляем величину в эквиваленте главной валюты,
+        # исходя из курса валют, который был в указанную дату этой денежной операции
         value_in_main_currency=ExpressionWrapper(
             F('value') / Subquery(rate.values('rate')[:1]),
-            output_field=FloatField()
+            output_field=FloatField(),
+            # filter=Q(date__mounth=current_month)
         )
     ).annotate(
-        total_value=Func('value_in_main_currency', function='Sum', output_field=FloatField())
+        # Получаем сумму всех денежных операций в текущей категории за текущий месяц
+        # total_value=Sum(
+        #     'value_in_main_currency',
+        #     # filter=Q(date__month=current_month),
+        #     output_field=FloatField(),
+        # )
+        total_value=Func(
+            'value_in_main_currency',
+            function='Sum',
+            output_field=FloatField(),
+        ),
+        # jan=Sum('value')
     )
 
     categories = Category.objects.filter(
         type__name=type,
         author=request.user.id
     ).annotate(
+        # Получаем дочерний Queryset и берем из него только аннотированное значение суммы денежный операций в текущей категории,
+        # поскольку аннотаций добавляет значение к каждому объекту модели,
+        # в Subquery передаются по очереди все ID категорий и попадают по очереди в OuterRef('id')
         values_in_main_currency=Round(
             Subquery(
                 moneys.values('total_value')
             ),
             2
         ),
+        # jan=Round(
+        #     Subquery(
+        #         moneys.values('jan')
+        #     )
+        # )
     ).annotate(
         difference=Round(ExpressionWrapper(F('limit') - F('values_in_main_currency'), output_field=FloatField()), 2)
     ) # категории доходов
-    print(categories.values())
+    # print(categories.values())
     return categories
 
 
 def categories_plan_sum(request):
+    """
+    Return user`s ctegories with limits set each category
+    and difference between income`s limit and expense`s limit values.
+    """
+
     sum_income_values_current_month = Sum('limit', filter=Q(type__name='incomes'))
     sum_expense_values_current_month = Sum('limit', filter=Q(type__name='expenses'))
 
@@ -113,7 +153,7 @@ def categories_plan_sum(request):
         expense_categories_sum = sum_expense_values_current_month,
         difference=sum_income_values_current_month - sum_expense_values_current_month
     )
-    print(categories_plan_sum['difference'])
+    # print(categories_plan_sum['difference'])
     return categories_plan_sum
 
 @login_required
@@ -161,10 +201,10 @@ def dashboard(request, pk=None):
         sum_expenses_values = Round(Sum('value_in_main_currency', filter=Q(type__name='expenses')), 2),
     )
 
-    print('all')
-    pprint(all_incomes_with_sum)
-    pprint(type(all_incomes_with_sum['sum_incomes_values']))
-    pprint(type(all_incomes_with_sum['sum_expenses_values']))
+    # print('all')
+    # pprint(all_incomes_with_sum)
+    # pprint(type(all_incomes_with_sum['sum_incomes_values']))
+    # pprint(type(all_incomes_with_sum['sum_expenses_values']))
 
     if type(all_incomes_with_sum['sum_incomes_values']) is not float or type(all_incomes_with_sum['sum_expenses_values']) is not float:
         if type(all_incomes_with_sum['sum_incomes_values']) is float and type(all_incomes_with_sum['sum_expenses_values']) is not float:
@@ -224,10 +264,13 @@ def dashboard(request, pk=None):
         'form': form,
         'set_currency_form': set_currency_form,
     }
+
     if set_currency_form.is_valid():
         set_currency_form.save()
+
     if request.method == 'POST':
         return redirect('webbudget:dashboard')
+
     return render(request, 'webbudget/dashboard.html', context)
 
 
@@ -328,6 +371,7 @@ def delete_category(request, pk):
     if request.method == 'POST':
         instance.delete()
         return redirect('webbudget:category')
+
     return render(request, 'webbudget/category.html', context)
 
 

@@ -14,7 +14,9 @@
     <!-- <link href="{% static 'bootstrap/sidebars.css' %}" rel="stylesheet"> -->
 
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'bootstrap/dashboard.js' %}"></script>
+    <script src="{% static 'bootstrap/sidebars.js' %}"></script>
   
     <link href='https://fonts.googleapis.com/css?family=Fredoka One' rel='stylesheet'>
     <link href="https://fonts.cdnfonts.com/css/robert-sans" rel="stylesheet">
@@ -30,6 +32,7 @@
     <main style="width: 100%;">
       {% block content %}Контента пока нет :({% endblock %}
       {% include "includes/modal_set_currency_form.html" %}
+      {% include "includes/modal_add_income_expense.html" %}
     </main>
     {% if request.path == "/" %}
       {% include "includes/footer.html" %}

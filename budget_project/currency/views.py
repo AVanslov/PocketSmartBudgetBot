@@ -17,7 +17,9 @@ today = date.today()
 
 @login_required
 def currencies_rates(request):
-    currencies = Rate.objects.filter(date=today)
+    currencies = Rate.objects.filter(
+        # date=today,
+    )
     graphic_creator.currencies_grafic()
 
     instance = get_object_or_404(UserMainCurrency, author=request.user)
@@ -27,6 +29,7 @@ def currencies_rates(request):
 
     context = {
         'title': title,
+        'main_currency': get_object_or_404(UserMainCurrency, author=request.user).main_currency,
         'currencies': currencies,
         'set_currency_form': set_currency_form,
     }

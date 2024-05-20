@@ -46,7 +46,7 @@
           <th scope="row">{{ category.oct }}</th>
           <th scope="row">{{ category.nov }}</th>
           <th scope="row">{{ category.dec }}</th>
-          <th scope="row">{{ category.total_sum }}</th>
+          <th scope="row">{{ category.values_in_main_currency }}</th>
           <th scope="row">{{ category.limit }}</th>
           <td>
             <form action="{% url 'webbudget:category_edit' category.id %}">
@@ -63,7 +63,7 @@
     <tr>
       <th colspan="17" scope="row">Expenses</th>
     </tr>
-    {% for category in expence_categories %}
+      {% for category in expence_categories %}
         <tr>
           <th scope="row">{{ category.category }}</th>
           <th scope="row">{{ category.jan }}</th>
@@ -78,7 +78,7 @@
           <th scope="row">{{ category.oct }}</th>
           <th scope="row">{{ category.nov }}</th>
           <th scope="row">{{ category.dec }}</th>
-          <th scope="row">{{ category.total_sum }}</th>
+          <th scope="row">{{ category.values_in_main_currency }}</th>
           <th scope="row">{{ category.limit }}</th>
           <td>
             <form action="{% url 'webbudget:category_edit' category.id %}">
@@ -94,53 +94,44 @@
       {% endfor %}
       <tr>
         <th scope="row">Sum of Incomes</th>
-        <th>{{ jan.income }}</th>
-        <th>{{ feb.income }}</th>
-        <th>{{ mar.income }}</th>
-        <th>{{ apr.income }}</th>
-        <th>{{ may.income }}</th>
-        <th>{{ jun.income }}</th>
-        <th>{{ jul.income }}</th>
-        <th>{{ aug.income }}</th>
-        <th>{{ sep.income }}</th>
-        <th>{{ oct.income }}</th>
-        <th>{{ nov.income }}</th>
-        <th>{{ dec.income }}</th>
-        <th>{{ total.income }}</th>
+        <th>{{ total_income_values_of_categories.total_value_jan }}</th>
+        <th>{{ total_income_values_of_categories.total_value_feb }}</th>
+        <th>{{ total_income_values_of_categories.total_value_mar }}</th>
+        <th>{{ total_income_values_of_categories.total_value_apr }}</th>
+        <th>{{ total_income_values_of_categories.total_value_may }}</th>
+        <th>{{ total_income_values_of_categories.total_value_jun }}</th>
+        <th>{{ total_income_values_of_categories.total_value_jul }}</th>
+        <th>{{ total_income_values_of_categories.total_value_aug }}</th>
+        <th>{{ total_income_values_of_categories.total_value_sep }}</th>
+        <th>{{ total_income_values_of_categories.total_value_oct }}</th>
+        <th>{{ total_income_values_of_categories.total_value_nov }}</th>
+        <th>{{ total_income_values_of_categories.total_value_dec }}</th>
+        <th>{{ total_incomes }}</th>
         <th colspan="3"></th>
       </tr>
       <tr>
         <th scope="row">Sum of Expenses</th>
-        <th>{{ jan.expense }}</th>
-        <th>{{ feb.expense }}</th>
-        <th>{{ mar.expense }}</th>
-        <th>{{ apr.expense }}</th>
-        <th>{{ may.expense }}</th>
-        <th>{{ jun.expense }}</th>
-        <th>{{ jul.expense }}</th>
-        <th>{{ aug.expense }}</th>
-        <th>{{ sep.expense }}</th>
-        <th>{{ oct.expense }}</th>
-        <th>{{ nov.expense }}</th>
-        <th>{{ dec.expense }}</th>
-        <th>{{ total.expense }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_jan }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_feb }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_mar }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_apr }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_may }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_jun }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_jul }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_aug }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_sep }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_oct }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_nov }}</th>
+        <th>{{ total_expense_values_of_categories.total_value_dec }}</th>
+        <th>{{ total_expenses }}</th>
         <th colspan="3"></th>
       </tr>
       <tr>
         <th scope="row">Balance</th>
-        <th>{{ jan.diff }}</th>
-        <th>{{ feb.diff }}</th>
-        <th>{{ mar.diff }}</th>
-        <th>{{ apr.diff }}</th>
-        <th>{{ may.diff }}</th>
-        <th>{{ jun.diff }}</th>
-        <th>{{ jul.diff }}</th>
-        <th>{{ aug.diff }}</th>
-        <th>{{ sep.diff }}</th>
-        <th>{{ oct.diff }}</th>
-        <th>{{ nov.diff }}</th>
-        <th>{{ dec.diff }}</th>
-        <th>{{ total.diff }}</th>
+        {% for total_value_by_month in differenses.values %}
+          <th>{{ total_value_by_month }}</th>
+        {% endfor %}
+        <th>{{ total_value_of_year }}</th>
         <th colspan="3"></th>
       </tr>
     </tbody>

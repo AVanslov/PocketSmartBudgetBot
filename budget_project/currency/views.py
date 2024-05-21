@@ -19,8 +19,9 @@ today = date.today()
 def currencies_rates(request):
     currencies = Rate.objects.filter(
         # date=today,
-    )
-    graphic_creator.currencies_grafic()
+        # ~Q(rate=1)
+    ).order_by('-date')
+    graphic_creator.currencies_grafic(request)
 
     instance = get_object_or_404(UserMainCurrency, author=request.user)
     set_currency_form = forms.UserMainCurrencyForm(request.POST or None, instance=instance)

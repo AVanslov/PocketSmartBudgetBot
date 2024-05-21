@@ -263,57 +263,57 @@ def dashboard(request, pk=None):
             output_field=FloatField()
         ),
     ).aggregate(
-        sum_incomes_values = Round(Sum('value_in_main_currency', filter=Q(type__name='incomes')), 2),
-        sum_expenses_values = Round(Sum('value_in_main_currency', filter=Q(type__name='expenses')), 2),
+        sum_incomes_values = Round(Coalesce(Sum('value_in_main_currency', filter=Q(type__name='incomes')), Value(0), output_field=FloatField()), 2),
+        sum_expenses_values = Round(Coalesce(Sum('value_in_main_currency', filter=Q(type__name='expenses')), Value(0), output_field=FloatField()), 2),
     )
 
     # print('all')
-    # pprint(all_incomes_with_sum)
+    pprint(all_incomes_with_sum)
     # pprint(type(all_incomes_with_sum['sum_incomes_values']))
     # pprint(type(all_incomes_with_sum['sum_expenses_values']))
 
-    if type(all_incomes_with_sum['sum_incomes_values']) is not float or type(all_incomes_with_sum['sum_expenses_values']) is not float:
-        if type(all_incomes_with_sum['sum_incomes_values']) is float and type(all_incomes_with_sum['sum_expenses_values']) is not float:
-            diff_incomes_expenses_values = all_incomes_with_sum['sum_incomes_values']
-        if type(all_incomes_with_sum['sum_incomes_values']) is not float and type(all_incomes_with_sum['sum_expenses_values']) is float:
-            diff_incomes_expenses_values = 0 - all_incomes_with_sum['sum_expenses_values']
-        else:
-            diff_incomes_expenses_values = 0
-    else:
-        diff_incomes_expenses_values = (
-            all_incomes_with_sum['sum_incomes_values'] -
-            all_incomes_with_sum['sum_expenses_values']
-        )
+    # if type(all_incomes_with_sum['sum_incomes_values']) is not float or type(all_incomes_with_sum['sum_expenses_values']) is not float:
+    #     if type(all_incomes_with_sum['sum_incomes_values']) is float and type(all_incomes_with_sum['sum_expenses_values']) is not float:
+    #         diff_incomes_expenses_values = all_incomes_with_sum['sum_incomes_values']
+    #     if type(all_incomes_with_sum['sum_incomes_values']) is not float and type(all_incomes_with_sum['sum_expenses_values']) is float:
+    #         diff_incomes_expenses_values = 0 - all_incomes_with_sum['sum_expenses_values']
+    #     else:
+    #         diff_incomes_expenses_values = 0
+    # else:
+    diff_incomes_expenses_values = (
+        all_incomes_with_sum['sum_incomes_values'] -
+        all_incomes_with_sum['sum_expenses_values']
+    )
 
     planning_incomes_sum = categories_plan_sum(request)['income_categories_sum']
     fact_incomes_sum = all_incomes_with_sum['sum_incomes_values']
     planning_expenses_sum = categories_plan_sum(request)['expense_categories_sum']
     fact_expenses_sum = all_incomes_with_sum['sum_expenses_values']
 
-    if categories_plan_sum(request)['income_categories_sum'] is None:
-        planning_incomes_sum = 0
+    # if categories_plan_sum(request)['income_categories_sum'] is None:
+    #     planning_incomes_sum = 0
 
-    if all_incomes_with_sum['sum_incomes_values'] is None:
-        fact_incomes_sum = 0
+    # if all_incomes_with_sum['sum_incomes_values'] is None:
+    #     fact_incomes_sum = 0
 
-    if categories_plan_sum(request)['expense_categories_sum'] is None:
-        planning_expenses_sum = 0
+    # if categories_plan_sum(request)['expense_categories_sum'] is None:
+    #     planning_expenses_sum = 0
     
-    if all_incomes_with_sum['sum_expenses_values'] is None:
-        fact_expenses_sum = 0
+    # if all_incomes_with_sum['sum_expenses_values'] is None:
+    #     fact_expenses_sum = 0
         
-    diff_plan_fact_incomes_values = (
+    diff_plan_fact_incomes_values = round((
         planning_incomes_sum
         - fact_incomes_sum
-    )
-    diff_plan_fact_expenses_values = (
+    ), 2)
+    diff_plan_fact_expenses_values = round((
         planning_expenses_sum
         - fact_expenses_sum
-    )
-    diff_total_plan_fact_values = (
+    ), 2)
+    diff_total_plan_fact_values = round((
         diff_plan_fact_incomes_values
         - diff_plan_fact_expenses_values
-    )
+    ), 2)
 
     filter = MoneyFilter(request.GET, queryset=all_incomes)
 

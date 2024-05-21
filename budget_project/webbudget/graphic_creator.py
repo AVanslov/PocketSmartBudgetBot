@@ -14,7 +14,7 @@ CURRENT_YEAR = datetime.datetime.now().year
 
 BACKGROUND_COLOR = '#f2f2f2'
 
-def currencies_grafic():
+def currencies_grafic(request):
     """
     Выводит график по стоимости всех валют относительно EUR.
     """
@@ -23,17 +23,16 @@ def currencies_grafic():
 
     # currencies_list = [i.name for i in Currency.objects.all()]
 
-    data = [[rate.rate for rate in Rate.objects.filter(first_currency__name='EUR', second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
-    dates = [[rate.date for rate in Rate.objects.filter(first_currency__name='EUR', second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
+    data = [[rate.rate for rate in Rate.objects.filter(date__year=CURRENT_YEAR , first_currency__name=request.user.usermaincurrency.main_currency.name, second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
+    dates = [[rate.date for rate in Rate.objects.filter(date__year=CURRENT_YEAR ,first_currency__name=request.user.usermaincurrency.main_currency.name, second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
+    labels = [[rate.second_currency.name for rate in Rate.objects.filter(date__year=CURRENT_YEAR , first_currency__name=request.user.usermaincurrency.main_currency.name, second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
 
-    print(data)
-    print(dates)
 
-    fig = plt.figure(facecolor=BACKGROUND_COLOR, figsize=(10, 2))
+    fig = plt.figure(facecolor=BACKGROUND_COLOR, figsize=(15, 3))
     # plt.axes().set_facecolor(BACKGROUND_COLOR)
     ax = fig.add_subplot(1, 1, 1)
     for i, pair in enumerate(data):
-        ax.plot(dates[i], pair)
+        ax.plot(dates[i], pair, label=str(labels[i][0]))
         ax.set_facecolor(BACKGROUND_COLOR)
     
     ax.set_title("Currencies")

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 import django
 from django.http import JsonResponse
 from django.core.serializers import serialize
@@ -15,40 +15,37 @@ django.setup()
 from bot.models import Currency, Rate
 
 
+TODAY = date.today()
 
-today = date.today()
+# START_DATE='2024-01-01'
+START_DATE=date(2024, 1, 1)
 
-# написать функцию, которая загрузит при деплое данные за последний год
+API_KEY='IgkovF8sB6vAxLk5meZ5BtXZ8bwXUONG'
+
+CURRENCIES = [
+    'C:EURRSD',
+    'C:USDRSD',
+    'C:USDEUR',
+    'C:EURRUB',
+    'C:USDRUB',
+]
+
 
 def save_parsing_result_to_db(result, date):
     # перебрать в цикле словари из данных каждого словаря создать объект модели, но не сохранять
     # с помощью balk_create создать группу объектов
 
-    #сначала проверить, что найденные курсы валют уже есть или создать новые в модель Currency
-    # date = today
-    # print(date)
 
-    currencies = [
-        'C:EURRSD',
-        'C:USDRSD',
-        'C:USDEUR',
-        'C:EURRUB',
-        'C:USDRUB',
-    ]
-
-    usefull_rates = [i for i in result.json()['results'] if i['T'] in currencies]
+    usefull_rates = [i for i in result.json()['results'] if i['T'] in CURRENCIES]
 
 
-    currencies = []
     for i in usefull_rates:
-        currency, status =  Currency.objects.get_or_create(
+        Currency.objects.get_or_create(
             name = i['T'][2:5]
         )
-        currencies.append(currency)
-        currency, status =  Currency.objects.get_or_create(
+        Currency.objects.get_or_create(
             name = i['T'][5:8]
         )
-        currencies.append(currency)
     
     objects = []
     for i in usefull_rates:
@@ -109,7 +106,21 @@ def save_parsing_result_to_db(result, date):
                     Currency,
                     name='RSD'
                 ),
-                rate=1
+                rate=1.19
+            )
+        )
+    objects.append(
+            Rate(
+                date=date,
+                first_currency=get_object_or_404(
+                    Currency,
+                    name='RSD'
+                ),
+                second_currency=get_object_or_404(
+                    Currency,
+                    name='RUB'
+                ),
+                rate=0.84
             )
         )
 
@@ -120,36 +131,195 @@ def save_parsing_result_to_db(result, date):
 def currency_parsing():
     """
     Делает запрос к серверу сервиса валют каждые 24 часа,
-    возвращает json, далее нужно сохранить эти данные в БД.
+    возвращает json, отправляет данные на сохранение в БД.
     """
 
-    # url='https://api.profit.com/data-api/fundamentals/forex/peers/{pair}?token=f4b37128adcb46a1a9a29eec180739f9'.format(pair=pair)
-
-    # currency_pair='EURRSD'
-    # start_date='2023-01-09'
-    date='2024-01-11'
-    # end_date='2023-01-09'
-    api_key='IgkovF8sB6vAxLk5meZ5BtXZ8bwXUONG'
+    # date='2024-05-10' # для ручного тестирования
 
     # запрос всех доступных пар на указанный день
 
     url='https://api.polygon.io/v2/aggs/grouped/locale/global/market/fx/{date}?adjusted=true&apiKey={api_key}'.format(
-        # currency_pair=currency_pair,
-        date=date,
-        api_key=api_key,
+        date=TODAY,
+        api_key=API_KEY,
     )
 
     result = requests.get(url)
 
     pprint(result.json())
 
+    save_parsing_result_to_db(result, date=TODAY)
+    # Timer(86400, currency_parsing).start() # запуск фукции каждые 24 часа
 
-    # print([i['last price'] for i in result.json()])
-    save_parsing_result_to_db(result, date)
-    # Timer(86400, currency_parsing).start()
 
+def save_historical_rates_to_db(result, pair):
+    """
+    Получет JSON с курсами валют за указанный промежуток времени,
+    Проверяет, чтобы таких курсов уже не было и пропускает значения,
+    если они уже есть для данной пары,
+    Сохраняет данные в БД.
+    """
+    # получаем словарь с ключами:
+
+    # 'ticker': 'C:EURUSD'
+
+    # 'results' - содержит список словарей,
+
+    # нас интересуют ключи:
+    # 't' - временной штамп
+    # 'vw' - курс валюты
+
+    first_currency = pair[2:5]
+    second_currency = pair[5:8]
+
+    objects = []
+    for currency_on_day in result.json()['results']:
+        current_date = datetime.fromtimestamp(currency_on_day['t']/1000)
+        if not Rate.objects.filter(
+            date=current_date,
+            first_currency__name=first_currency,
+            second_currency__name=second_currency,
+        ).exists():
+            objects.append(
+                Rate(
+                    date=current_date,
+                    first_currency=get_object_or_404(
+                        Currency,
+                        name=first_currency
+                    ),
+                    second_currency=get_object_or_404(
+                        Currency,
+                        name=second_currency
+                    ),
+                    rate=currency_on_day['vw']
+                )
+            )
+        if not Rate.objects.filter(
+            date=current_date,
+            first_currency__name=first_currency,
+            second_currency__name=first_currency,
+        ).exists():
+            objects.append(
+                Rate(
+                    date=current_date,
+                    first_currency=get_object_or_404(
+                        Currency,
+                        name=first_currency
+                    ),
+                    second_currency=get_object_or_404(
+                        Currency,
+                        name=first_currency
+                    ),
+                    rate=1
+                )
+            )
+        if not Rate.objects.filter(
+            date=current_date,
+            first_currency__name=second_currency,
+            second_currency__name=second_currency,
+        ).exists():
+            objects.append(
+                Rate(
+                    date=current_date,
+                    first_currency=get_object_or_404(
+                        Currency,
+                        name=second_currency
+                    ),
+                    second_currency=get_object_or_404(
+                        Currency,
+                        name=second_currency
+                    ),
+                    rate=1
+                )
+            )
+
+    Rate.objects.bulk_create(objects)
+
+def save_rub_rsd_to_db(start_date, end_date):
+    # вручную допишем для пары RUBRSD
+    delta = timedelta(days=1)
+    days = []
+
+    while start_date <= end_date:
+        days.append(start_date)
+        start_date += delta
+    
+    print(f'Days between {start_date} and {end_date}')
+    print(days)
+
+    objects = []
+    for current_date in days:
+        if not Rate.objects.filter(
+            date=current_date,
+            first_currency__name='RUB',
+            second_currency__name='RSD',
+        ).exists():
+            objects.append(
+                Rate(
+                    date=current_date,
+                    first_currency=get_object_or_404(
+                        Currency,
+                        name='RUB'
+                    ),
+                    second_currency=get_object_or_404(
+                        Currency,
+                        name='RSD'
+                    ),
+                    rate=1.19
+                )
+            )
+        if not Rate.objects.filter(
+            date=current_date,
+            first_currency__name='RSD',
+            second_currency__name='RUB',
+        ).exists():
+            objects.append(
+                Rate(
+                    date=current_date,
+                    first_currency=get_object_or_404(
+                        Currency,
+                        name='RSD'
+                    ),
+                    second_currency=get_object_or_404(
+                        Currency,
+                        name='RUB'
+                    ),
+                    rate=0.84
+                )
+            )
+    Rate.objects.bulk_create(objects)
+
+
+def historical_rates(start_date, end_date, pair):
+    """
+    Получает историю курсов валют за указанный период времени,
+    Отправляет полученные данные на сохранение в БД.
+    """
+    url = 'https://api.polygon.io/v2/aggs/ticker/{pair}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&apiKey={api_key}'.format(
+        pair=pair, # значение вида C:EURUSD
+        start_date=start_date,
+        end_date=end_date,
+        api_key=API_KEY,
+    )
+    result = requests.get(url)
+
+    pprint(result.json())
+
+    save_historical_rates_to_db(result, pair)
+
+
+
+
+print(f'The code has been started at {datetime.now()}')
 
 currency_parsing()
-# Rate.objects.all().delete()
-# for i in range(20,32):
-# Currency.objects.get(pk=32).delete()
+
+print(f'All data for {TODAY} has been successfully added at {datetime.now()}')
+
+# не забываем, что текщий лимит тарифа 5 API Calls / Minute - более 5 объектов в списке за раз не передавать
+
+for current_pair in CURRENCIES:
+    historical_rates(start_date=START_DATE, end_date=TODAY, pair=current_pair)
+    print(f'All data from {START_DATE} to {TODAY} has been successfully added at {datetime.now()}')
+
+save_rub_rsd_to_db(start_date=START_DATE, end_date=TODAY)
+print(f'All data for RUB and RSD from {START_DATE} to {TODAY} has been successfully added at {datetime.now()}')

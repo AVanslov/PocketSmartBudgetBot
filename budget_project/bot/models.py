@@ -24,7 +24,7 @@ class Category(models.Model):
     """
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
     category = models.CharField(default=None, max_length=150)
-    limit = models.IntegerField(default=None, null=True, blank=True)
+    limit = models.IntegerField(default=0, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -46,6 +46,7 @@ class UserMainCurrency(models.Model):
     Модель описывает главную валюту, которую выбрал пользователь.
     """
     author = models.OneToOneField(User, on_delete=models.CASCADE)
+    # main_currency = models.ForeignKey(Currency, default=None, on_delete=models.CASCADE)
     main_currency = models.ForeignKey(Currency, default=1, on_delete=models.SET_DEFAULT)
 
     def __str__(self):
@@ -78,12 +79,16 @@ class Rate(models.Model):
     date = models.DateField()
     first_currency = models.ForeignKey(
         Currency,
+        # default=None,
+        # on_delete=models.CASCADE,
         default=1,
         on_delete=models.SET_DEFAULT,
         related_name='rates_by_first_currency'
     )
     second_currency = models.ForeignKey(
         Currency,
+        # default=None,
+        # on_delete=models.CASCADE,
         default=2,
         on_delete=models.SET_DEFAULT,
         related_name='rates_by_second_currency'
@@ -105,10 +110,13 @@ class Money(models.Model):
     """
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
     comment = models.CharField(default=None, max_length=150)
-    category = GroupedForeignKey(
-        Category,
-        'type'
-    )
+    # category = GroupedForeignKey(
+    #     Category,
+    #     'type'
+    # )
+
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
     # category = ChainedForeignKey(
     #     Category,
     #     chained_field='type',
@@ -120,6 +128,7 @@ class Money(models.Model):
     value = models.IntegerField(default=0)
     date = models.DateField()
     currency = models.ForeignKey(Currency, default=1, on_delete=models.SET_DEFAULT)
+    # currency = models.ForeignKey(Currency, default=None, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

@@ -1,17 +1,33 @@
 # version: '3.8'
 
 volumes:
-  db:
+  pg_data:
+  static:
+  media_volume:
 
 services:
   db:
     image: postgres:13.10
     env_file: .env
     volumes:
-      - db:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
 
-  budget_project:
+  backend:
     build: ./
     env_file: .env
+    volumes:
+      - static:/backend_static
+      - ./media:/app/budget_project/media/
     depends_on:
       - db
+
+  gateway:
+    build: ./nginx/
+    env_file: .env
+    volumes:
+      - static:/staticfiles/
+      - ./media:/app/budget_project/media/
+    ports:
+      - 8000:80
+    depends_on:
+      - backend

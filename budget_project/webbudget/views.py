@@ -142,18 +142,18 @@ def categories(request, type):
             ),
             2
         ),
-        jan=Round(Subquery(moneys.values('jan')), 2),
-        feb=Round(Subquery(moneys.values('feb')), 2),
-        mar=Round(Subquery(moneys.values('mar')), 2),
-        apr=Round(Subquery(moneys.values('apr')), 2),
-        may=Round(Subquery(moneys.values('may')), 2),
-        jun=Round(Subquery(moneys.values('jun')), 2),
-        jul=Round(Subquery(moneys.values('jul')), 2),
-        aug=Round(Subquery(moneys.values('aug')), 2),
-        sep=Round(Subquery(moneys.values('sep')), 2),
-        oct=Round(Subquery(moneys.values('oct')), 2),
-        nov=Round(Subquery(moneys.values('nov')), 2),
-        dec=Round(Subquery(moneys.values('dec')), 2),
+        jan=Round(Coalesce(Subquery(moneys.values('jan')), Value(0), output_field=FloatField()), 2),
+        feb=Round(Coalesce(Subquery(moneys.values('feb')), Value(0), output_field=FloatField()), 2),
+        mar=Round(Coalesce(Subquery(moneys.values('mar')), Value(0), output_field=FloatField()), 2),
+        apr=Round(Coalesce(Subquery(moneys.values('apr')), Value(0), output_field=FloatField()), 2),
+        may=Round(Coalesce(Subquery(moneys.values('may')), Value(0), output_field=FloatField()), 2),
+        jun=Round(Coalesce(Subquery(moneys.values('jun')), Value(0), output_field=FloatField()), 2),
+        jul=Round(Coalesce(Subquery(moneys.values('jul')), Value(0), output_field=FloatField()), 2),
+        aug=Round(Coalesce(Subquery(moneys.values('aug')), Value(0), output_field=FloatField()), 2),
+        sep=Round(Coalesce(Subquery(moneys.values('sep')), Value(0), output_field=FloatField()), 2),
+        oct=Round(Coalesce(Subquery(moneys.values('oct')), Value(0), output_field=FloatField()), 2),
+        nov=Round(Coalesce(Subquery(moneys.values('nov')), Value(0), output_field=FloatField()), 2),
+        dec=Round(Coalesce(Subquery(moneys.values('dec')), Value(0), output_field=FloatField()), 2),
     ).annotate(
         difference=Round(ExpressionWrapper(F('limit') - F('values_in_main_currency'), output_field=FloatField()), 2),
     ) # категории доходов
@@ -208,8 +208,8 @@ def categories_plan_sum(request):
     and difference between income`s limit and expense`s limit values.
     """
 
-    sum_income_values_current_month = Sum('limit', filter=Q(type__name='incomes'))
-    sum_expense_values_current_month = Sum('limit', filter=Q(type__name='expenses'))
+    sum_income_values_current_month = Round(Coalesce(Sum('limit', filter=Q(type__name='incomes')), Value(0), output_field=FloatField()), 2)
+    sum_expense_values_current_month = Round(Coalesce(Sum('limit', filter=Q(type__name='expenses')), Value(0), output_field=FloatField()), 2)
 
     categories_plan_sum = Category.objects.filter(
         author=request.user.id

@@ -21,19 +21,26 @@ def currencies_grafic(request):
     name = 'currencies.png'
     name_of_file =  settings.MEDIA_ROOT / name
 
+    print('!!!')
+    print('URL')
+    print(name_of_file)
+    print('URL')
+
     # currencies_list = [i.name for i in Currency.objects.all()]
 
     data = [[rate.rate for rate in Rate.objects.filter(date__year=CURRENT_YEAR , first_currency__name=request.user.usermaincurrency.main_currency.name, second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
     dates = [[rate.date for rate in Rate.objects.filter(date__year=CURRENT_YEAR ,first_currency__name=request.user.usermaincurrency.main_currency.name, second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
     labels = [[rate.second_currency.name for rate in Rate.objects.filter(date__year=CURRENT_YEAR , first_currency__name=request.user.usermaincurrency.main_currency.name, second_currency__name=i.name).order_by('date')] for i in Currency.objects.all()]
 
-
     fig = plt.figure(facecolor=BACKGROUND_COLOR, figsize=(15, 3))
     # plt.axes().set_facecolor(BACKGROUND_COLOR)
     ax = fig.add_subplot(1, 1, 1)
-    for i, pair in enumerate(data):
-        ax.plot(dates[i], pair, label=str(labels[i][0]))
-        ax.set_facecolor(BACKGROUND_COLOR)
+    for i, pair in enumerate(data, 0):
+        if len(dates[i]) != 0:
+            print(len(dates[i]))
+            print(len(pair))
+            ax.plot(dates[i], pair, label=str(labels[i][0]))
+            ax.set_facecolor(BACKGROUND_COLOR)
     
     ax.set_title("Currencies")
     ax.legend()
@@ -280,6 +287,12 @@ def create_grafic(request):
 
     name = str(request.user.username) + '_incomes_expenses.png'
     name_of_file =  settings.MEDIA_ROOT / name
+
+    print('!!!')
+    print('URL')
+    print(name_of_file)
+    print('URL')
+
     if incomes_object_dictinaries and not expenses_object_dictinaries:
         return incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request)
     if expenses_object_dictinaries and not incomes_object_dictinaries:

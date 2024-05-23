@@ -12,11 +12,4 @@ COPY . .
 
 WORKDIR /app/budget_project
 
-# RUN python3 manage.py makemigrations
-
-# RUN python3 manage.py migrate
-
-# RUN python3 BudgetPlanerBot.py
-
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "budget_project.wsgi"] 
-

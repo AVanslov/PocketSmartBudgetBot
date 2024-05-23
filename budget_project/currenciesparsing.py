@@ -311,7 +311,7 @@ def historical_rates(start_date, end_date, pair):
 
 print(f'The code has been started at {datetime.now()}')
 
-currency_parsing()
+# currency_parsing()
 
 print(f'All data for {TODAY} has been successfully added at {datetime.now()}')
 

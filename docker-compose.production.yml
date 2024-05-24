@@ -28,6 +28,6 @@ services:
       - static:/staticfiles/
       - ./media:/app/budget_project/media/
     ports:
-      - 6000:80
+      - 8070:80
     depends_on:
       - backend

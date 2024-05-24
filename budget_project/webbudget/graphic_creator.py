@@ -293,11 +293,12 @@ def create_grafic(request):
     print(name_of_file)
     print('URL')
 
+    ### !!! Ошибка при создании графика, если у пользователя есть только расходы за несколько разных месяцев, а доходов нет
     if incomes_object_dictinaries and not expenses_object_dictinaries:
         return incomes_or_expenses_grafic(incomes_object_dictinaries, name_of_file, request)
     if expenses_object_dictinaries and not incomes_object_dictinaries:
-        return incomes_or_expenses_grafic(expenses_object_dictinaries, name_of_file, request)
+        return incomes_or_expenses_grafic(expenses_object_dictinaries,name_of_file, request)
     if incomes_object_dictinaries and expenses_object_dictinaries:
         return incomes_and_expenses_grafic(incomes_object_dictinaries, expenses_object_dictinaries, name_of_file, request)
     else:
-        return incomes_by_categories(request)
+        return currencies_grafic(request)

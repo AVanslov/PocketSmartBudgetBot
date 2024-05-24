@@ -49,10 +49,10 @@ def all_money_with_value_in_main_currency(request, type):
     """
 
     rate = Rate.objects.filter(
-            date=OuterRef('date'),
-            first_currency=OuterRef('current_first_currency'),
-            second_currency=OuterRef('current_second_currency')
-        )
+        date=OuterRef('date'),
+        first_currency=OuterRef('current_first_currency'),
+        second_currency=OuterRef('current_second_currency')
+    )
 
     return Money.objects.filter(
         type__name=type,

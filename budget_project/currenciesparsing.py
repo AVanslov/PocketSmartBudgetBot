@@ -195,7 +195,7 @@ def save_historical_rates_to_db(result, pair):
             )
         if not Rate.objects.filter(
             date=current_date,
-            first_currency__name=first_currency,
+            first_currency__name=second_currency,
             second_currency__name=first_currency,
         ).exists():
             objects.append(
@@ -203,34 +203,36 @@ def save_historical_rates_to_db(result, pair):
                     date=current_date,
                     first_currency=get_object_or_404(
                         Currency,
-                        name=first_currency
-                    ),
-                    second_currency=get_object_or_404(
-                        Currency,
-                        name=first_currency
-                    ),
-                    rate=1
-                )
-            )
-        if not Rate.objects.filter(
-            date=current_date,
-            first_currency__name=second_currency,
-            second_currency__name=second_currency,
-        ).exists():
-            objects.append(
-                Rate(
-                    date=current_date,
-                    first_currency=get_object_or_404(
-                        Currency,
                         name=second_currency
                     ),
                     second_currency=get_object_or_404(
                         Currency,
-                        name=second_currency
+                        name=first_currency
                     ),
-                    rate=1
+                    rate=1/currency_on_day['vw']
                 )
             )
+        
+        for i in Currency.objects.all():
+            if not Rate.objects.filter(
+                date=current_date,
+                first_currency__name=i.name,
+                second_currency__name=i.name,
+            ).exists():
+                objects.append(
+                    Rate(
+                        date=current_date,
+                        first_currency=get_object_or_404(
+                            Currency,
+                            name=i.name
+                        ),
+                        second_currency=get_object_or_404(
+                            Currency,
+                            name=i.name
+                        ),
+                        rate=1
+                    )
+                )
 
     Rate.objects.bulk_create(objects)
 

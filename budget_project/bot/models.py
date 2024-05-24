@@ -102,6 +102,7 @@ class Rate(models.Model):
                 name='unique_%(class)s',
             ),
         ]
+        ordering = ('date',)
 
 
 class Money(models.Model):

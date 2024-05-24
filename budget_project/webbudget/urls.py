@@ -3,7 +3,6 @@ from . import views
 
 app_name = 'webbudget'
 
-
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('category/', views.edit_category, name='category'),
@@ -12,4 +11,5 @@ urlpatterns = [
     path('dashboard/<int:pk>/edit/', views.dashboard, name='edit'),
     path('dashboard/<int:pk>/delete/', views.delete_money, name='delete'),
     path('set-main-currency/', views.main_currency, name='currency'),
+    path('export/', views.export_users_csv, name='export_users_csv'),
 ]

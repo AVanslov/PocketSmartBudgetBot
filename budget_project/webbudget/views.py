@@ -1,6 +1,8 @@
+import csv
 import datetime
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.db.models import (
     Avg,
     Count,
@@ -481,3 +483,18 @@ def main_currency(request):
         return redirect('webbudget:dashboard')
 
     return render(request, 'webbudget/dashboard.html', context)
+
+
+def export_users_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="moneys.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow(['type','comment', 'category', 'value', 'date', 'currency', 'author'])
+
+    moneys = Money.objects.filter(author=request.user).values_list('type','comment', 'category', 'value', 'date', 'currency', 'author')
+    for money in moneys:
+        writer.writerow(money)
+
+    return response

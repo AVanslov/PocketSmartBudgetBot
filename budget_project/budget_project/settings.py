@@ -28,7 +28,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = os.getenv(
     'ALLOWED_HOSTS',
-    default='127.0.0.1,localhost'
+    default='127.0.0.1,localhost,simbu.zapto.org'
 ).split(',')
 
 CSRF_TRUSTED_ORIGINS = ["https://simbu.zapto.org"]

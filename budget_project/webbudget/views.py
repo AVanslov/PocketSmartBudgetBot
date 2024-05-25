@@ -47,22 +47,27 @@ def all_money_with_value_in_main_currency(request, type):
     """
     Return user`s money objects in user`s main currency.
     """
-
+    # rate = get_object_or_404(
+    #     Rate,
+    #     date=OuterRef('date'),
+    #     first_currency=OuterRef('current_first_currency'),
+    #     second_currency=OuterRef('current_second_currency')
+    # )
     rate = Rate.objects.filter(
         date=OuterRef('date'),
         first_currency=OuterRef('current_first_currency'),
         second_currency=OuterRef('current_second_currency')
-    )
+    ).order_by().values('rate')[:1]
 
     return Money.objects.filter(
         type__name=type,
         author=request.user
-    ).annotate(
+    ).order_by().annotate(
         current_first_currency=F('author__usermaincurrency__main_currency__id'),
         current_second_currency=F('currency__id'),
     ).annotate(
         value_in_main_currency=ExpressionWrapper(
-            F('value') / Subquery(rate.values('rate')[:1]),
+            F('value') / Subquery(rate),
             output_field=FloatField()
         )
     ).order_by('date')
@@ -81,16 +86,15 @@ def categories(request, type):
         date=OuterRef('date'), # Получаем дату текущего родительского объекта
         first_currency=OuterRef('current_first_currency'), # Получаем первую валюту в паре (она же главная валюта пользователя) текущего родительского объекта
         second_currency=OuterRef('current_second_currency') # Получаем вторую валюту в паре (она же валюта родительского объекта модели Money)
-    )
-    print('month')
-    print(current_month)
+    ).order_by().values('rate')[:1]
+
     moneys = Money.objects.filter(
         # date__month=current_month,
-        date__year=current_year,
+        # date__year=current_year,
         author=request.user,
         # Говорим, что ID категории смотреть в родительском Queryset
         category=OuterRef('id')
-    ).annotate(
+    ).order_by().annotate(
         # Получаем id объекта главной валюты
         current_first_currency=F('author__usermaincurrency__main_currency__id'),
         # Получаем id объекта валюты текущей денежной операции
@@ -99,7 +103,7 @@ def categories(request, type):
         # Вычисляем величину в эквиваленте главной валюты,
         # исходя из курса валют, который был в указанную дату этой денежной операции
         value_in_main_currency=ExpressionWrapper(
-            F('value') / Subquery(rate.values('rate')[:1]),
+            F('value') / Subquery(rate),
             output_field=FloatField(),
             # filter=Q(date__mounth=current_month)
         ),
@@ -129,33 +133,33 @@ def categories(request, type):
         #     function='Sum',
         #     output_field=FloatField(),
         # ),
-    )
+    ).order_by('date')
 
     categories = Category.objects.filter(
         type__name=type,
-        author=request.user.id
-    ).annotate(
+        author=request.user
+    ).order_by().annotate(
         # Получаем дочерний Queryset и берем из него только аннотированное значение суммы денежный операций в текущей категории,
         # поскольку аннотаций добавляет значение к каждому объекту модели,
         # в Subquery передаются по очереди все ID категорий и попадают по очереди в OuterRef('id')
         values_in_main_currency=Round(
             Subquery(
-                moneys.values('total_value')
+                moneys.values('total_value')[:1]
             ),
             2
         ),
-        jan=Round(Coalesce(Subquery(moneys.values('jan')), Value(0), output_field=FloatField()), 2),
-        feb=Round(Coalesce(Subquery(moneys.values('feb')), Value(0), output_field=FloatField()), 2),
-        mar=Round(Coalesce(Subquery(moneys.values('mar')), Value(0), output_field=FloatField()), 2),
-        apr=Round(Coalesce(Subquery(moneys.values('apr')), Value(0), output_field=FloatField()), 2),
-        may=Round(Coalesce(Subquery(moneys.values('may')), Value(0), output_field=FloatField()), 2),
-        jun=Round(Coalesce(Subquery(moneys.values('jun')), Value(0), output_field=FloatField()), 2),
-        jul=Round(Coalesce(Subquery(moneys.values('jul')), Value(0), output_field=FloatField()), 2),
-        aug=Round(Coalesce(Subquery(moneys.values('aug')), Value(0), output_field=FloatField()), 2),
-        sep=Round(Coalesce(Subquery(moneys.values('sep')), Value(0), output_field=FloatField()), 2),
-        oct=Round(Coalesce(Subquery(moneys.values('oct')), Value(0), output_field=FloatField()), 2),
-        nov=Round(Coalesce(Subquery(moneys.values('nov')), Value(0), output_field=FloatField()), 2),
-        dec=Round(Coalesce(Subquery(moneys.values('dec')), Value(0), output_field=FloatField()), 2),
+        jan=Round(Coalesce(Subquery(moneys.values('jan')[:1]), Value(0), output_field=FloatField()), 2),
+        feb=Round(Coalesce(Subquery(moneys.values('feb')[:1]), Value(0), output_field=FloatField()), 2),
+        mar=Round(Coalesce(Subquery(moneys.values('mar')[:1]), Value(0), output_field=FloatField()), 2),
+        apr=Round(Coalesce(Subquery(moneys.values('apr')[:1]), Value(0), output_field=FloatField()), 2),
+        may=Round(Coalesce(Subquery(moneys.values('may')[:1]), Value(0), output_field=FloatField()), 2),
+        jun=Round(Coalesce(Subquery(moneys.values('jun')[:1]), Value(0), output_field=FloatField()), 2),
+        jul=Round(Coalesce(Subquery(moneys.values('jul')[:1]), Value(0), output_field=FloatField()), 2),
+        aug=Round(Coalesce(Subquery(moneys.values('aug')[:1]), Value(0), output_field=FloatField()), 2),
+        sep=Round(Coalesce(Subquery(moneys.values('sep')[:1]), Value(0), output_field=FloatField()), 2),
+        oct=Round(Coalesce(Subquery(moneys.values('oct')[:1]), Value(0), output_field=FloatField()), 2),
+        nov=Round(Coalesce(Subquery(moneys.values('nov')[:1]), Value(0), output_field=FloatField()), 2),
+        dec=Round(Coalesce(Subquery(moneys.values('dec')[:1]), Value(0), output_field=FloatField()), 2),
     ).annotate(
         difference=Round(ExpressionWrapper(F('limit') - F('values_in_main_currency'), output_field=FloatField()), 2),
     ) # категории доходов
@@ -168,7 +172,7 @@ def categories_by_monthes_aggrigations(request, type):
         date=OuterRef('date'), # Получаем дату текущего родительского объекта
         first_currency=OuterRef('current_first_currency'), # Получаем первую валюту в паре (она же главная валюта пользователя) текущего родительского объекта
         second_currency=OuterRef('current_second_currency') # Получаем вторую валюту в паре (она же валюта родительского объекта модели Money)
-    )
+    ).order_by().values('rate')[:1]
 
     moneys = Money.objects.filter(
         type__name=type,
@@ -176,7 +180,7 @@ def categories_by_monthes_aggrigations(request, type):
         date__year=current_year,
         author=request.user,
         # category=OuterRef('id'),
-    ).annotate(
+    ).order_by().annotate(
         # Получаем id объекта главной валюты
         current_first_currency=F('author__usermaincurrency__main_currency__id'),
         # Получаем id объекта валюты текущей денежной операции
@@ -185,7 +189,7 @@ def categories_by_monthes_aggrigations(request, type):
         # Вычисляем величину в эквиваленте главной валюты,
         # исходя из курса валют, который был в указанную дату этой денежной операции
         value_in_main_currency=ExpressionWrapper(
-            F('value') / Subquery(rate.values('rate')[:1]),
+            F('value') / Subquery(rate),
             output_field=FloatField(),
         ),
     ).aggregate(
@@ -226,6 +230,8 @@ def categories_plan_sum(request):
 @login_required
 def dashboard(request, pk=None):
 
+    # когда создаешь два объекта одной категории 500 ошибка и только на postgresql
+
     if pk is not None:
         instance = get_object_or_404(Money, pk=pk)
 
@@ -246,22 +252,27 @@ def dashboard(request, pk=None):
         author=request.user
     ).order_by('-date')
 
-
+    # rate = get_object_or_404(
+    #     Rate,
+    #     date=OuterRef('date'),
+    #     first_currency=OuterRef('current_first_currency'),
+    #     second_currency=OuterRef('current_second_currency')
+    # ).values('rate')
     rate = Rate.objects.filter(
         date=OuterRef('date'),
         first_currency=OuterRef('current_first_currency'),
         second_currency=OuterRef('current_second_currency')
-    )
+    ).order_by().values('rate')[:1]
 
     all_incomes_with_sum = Money.objects.filter(
         author=request.user,
         date__month=current_month
-    ).annotate(
+    ).order_by().annotate(
         current_first_currency=F('author__usermaincurrency__main_currency__id'),
         current_second_currency=F('currency__id'),
     ).annotate(
         value_in_main_currency=ExpressionWrapper(
-            F('value') / Subquery(rate.values('rate')[:1]),
+            F('value') / Subquery(rate),
             output_field=FloatField()
         ),
     ).aggregate(

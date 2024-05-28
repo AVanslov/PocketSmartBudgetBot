@@ -172,16 +172,42 @@ def save_historical_rates_to_db(result, pair):
     second_currency = pair[5:8]
 
     objects = []
-    for currency_on_day in result.json()['results']:
-        current_date = datetime.fromtimestamp(currency_on_day['t']/1000)
+
+    start_date = START_DATE
+    end_date = TODAY
+    step = timedelta(days=1)
+    date = start_date
+
+    all_dates = []
+
+    while date <= end_date:
+        date += step
+        all_dates.append(date)
+
+    date_rate={datetime.fromtimestamp(currency_on_day['t']/1000).date(): currency_on_day['vw'] for currency_on_day in result.json()['results']}
+    
+    data_for_save = {}
+    for num, d in enumerate(all_dates, 0):
+        if d in date_rate.keys():
+            data_for_save[d] = date_rate[d]
+        
+
+        elif all_dates[num-1] in date_rate.keys():
+            data_for_save[d] = date_rate[all_dates[num-1]]
+        
+        elif all_dates[num-2] in date_rate.keys():
+            data_for_save[d] = date_rate[all_dates[num-2]]
+
+    for date, rate in data_for_save.items():
+
         if not Rate.objects.filter(
-            date=current_date,
+            date=date,
             first_currency__name=first_currency,
             second_currency__name=second_currency,
         ).exists():
             objects.append(
                 Rate(
-                    date=current_date,
+                    date=date,
                     first_currency=get_object_or_404(
                         Currency,
                         name=first_currency
@@ -190,17 +216,17 @@ def save_historical_rates_to_db(result, pair):
                         Currency,
                         name=second_currency
                     ),
-                    rate=currency_on_day['vw']
+                    rate=rate
                 )
             )
         if not Rate.objects.filter(
-            date=current_date,
+            date=date,
             first_currency__name=second_currency,
             second_currency__name=first_currency,
         ).exists():
             objects.append(
                 Rate(
-                    date=current_date,
+                    date=date,
                     first_currency=get_object_or_404(
                         Currency,
                         name=second_currency
@@ -209,19 +235,19 @@ def save_historical_rates_to_db(result, pair):
                         Currency,
                         name=first_currency
                     ),
-                    rate=1/currency_on_day['vw']
+                    rate=1/rate
                 )
             )
         
         for i in Currency.objects.all():
             if not Rate.objects.filter(
-                date=current_date,
+                date=date,
                 first_currency__name=i.name,
                 second_currency__name=i.name,
             ).exists():
                 objects.append(
                     Rate(
-                        date=current_date,
+                        date=date,
                         first_currency=get_object_or_404(
                             Currency,
                             name=i.name
@@ -307,6 +333,7 @@ def historical_rates(start_date, end_date, pair):
     pprint(result.json())
 
     save_historical_rates_to_db(result, pair)
+    Timer(86400, currency_parsing).start() # запуск фукции каждые 24 часа
 
 
 
@@ -318,6 +345,7 @@ print(f'The code has been started at {datetime.now()}')
 print(f'All data for {TODAY} has been successfully added at {datetime.now()}')
 
 # не забываем, что текщий лимит тарифа 5 API Calls / Minute - более 5 объектов в списке за раз не передавать
+### Добавить следующую логику - или если пользователь делает запрос в бд -> добавляем курс валют, если подходящего нет - на основании ближайшего предыдущего
 
 for current_pair in CURRENCIES:
     historical_rates(start_date=START_DATE, end_date=TODAY, pair=current_pair)

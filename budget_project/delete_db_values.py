@@ -9,7 +9,7 @@ django.setup()
 
 from bot.models import Currency, Rate, Money
 
-# Rate.objects.all().delete()
+Rate.objects.all().delete()
 # for i in range(19,26):
 #     Currency.objects.filter(id=i).delete()
 

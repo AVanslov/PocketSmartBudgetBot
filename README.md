@@ -1,6 +1,6 @@
 **EN**
 # SIMBU - Online service for budget management and planning
-The project is available at [simbu .zapto.org](https://simbu .zapto.org/)
+The project is available at [simbu .zapto.org](https://simbu.zapto.org/)
 
 ## Overview
 For proper budget management, it is necessary to be able to plan expenses and income and know at any given time how much money is available, as well as be able to distribute it competently and be able to analyze your assets and liabilities.
@@ -61,7 +61,7 @@ Transfer the service to the DigitalOcean server.
 
 # SIMBU - Онлайн-сервис для управления и планирования бюджета
 
-Проект доступен по адресу [simba .zapto.org](https://simba .zapto.org/)
+Проект доступен по адресу [simba .zapto.org](https://simba.zapto.org/)
 
 ## Обзор
 Для правильного управления бюджетом необходимо уметь планировать расходы и доходы и знать, сколько денег доступно в любой момент времени, а также уметь грамотно распределять их и анализировать свои активы и пассивы.

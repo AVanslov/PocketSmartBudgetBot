@@ -16,8 +16,6 @@ from bot.models import Currency, Rate
 
 
 TODAY = date.today()
-
-# START_DATE='2024-01-01'
 START_DATE=date(2024, 1, 1)
 
 API_KEY='IgkovF8sB6vAxLk5meZ5BtXZ8bwXUONG'
@@ -32,8 +30,8 @@ CURRENCIES = [
 
 
 def save_parsing_result_to_db(result, date):
-    # перебрать в цикле словари из данных каждого словаря создать объект модели, но не сохранять
-    # с помощью balk_create создать группу объектов
+    # перебираем в цикле словари из данных - для каждого словаря создаём объект модели, но не сохраняем
+    # с помощью balk_create создаём группу объектов
 
 
     usefull_rates = [i for i in result.json()['results'] if i['T'] in CURRENCIES]
@@ -333,19 +331,14 @@ def historical_rates(start_date, end_date, pair):
     pprint(result.json())
 
     save_historical_rates_to_db(result, pair)
-    Timer(86400, currency_parsing).start() # запуск фукции каждые 24 часа
+    # Timer(86400, currency_parsing).start() # запуск фукции каждые 24 часа - включим, когда опубликуем на постоянный сервер
 
 
 
 
 print(f'The code has been started at {datetime.now()}')
 
-# currency_parsing()
-
-print(f'All data for {TODAY} has been successfully added at {datetime.now()}')
-
-# не забываем, что текщий лимит тарифа 5 API Calls / Minute - более 5 объектов в списке за раз не передавать
-### Добавить следующую логику - или если пользователь делает запрос в бд -> добавляем курс валют, если подходящего нет - на основании ближайшего предыдущего
+# текщий лимит тарифа 5 API Calls / Minute - более 5 объектов в списке за раз не передавать
 
 for current_pair in CURRENCIES:
     historical_rates(start_date=START_DATE, end_date=TODAY, pair=current_pair)

@@ -1,3 +1,8 @@
+"""
+Функции для работы телеграм бота. 
+На время работы над основным кодом сервиса выключены.
+"""
+
 # CALENDAR_CALLBACK = "CALENDAR"
 
 # start_message = "Hey {}! I am calender bot \n \n Please type /calendar or /jcalendar to view my power"

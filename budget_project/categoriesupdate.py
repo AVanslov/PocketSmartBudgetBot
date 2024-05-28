@@ -1,3 +1,8 @@
+"""
+Функции для работы телеграм бота. 
+На время работы над основным кодом сервиса выключены.
+"""
+
 # from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # from bot import views

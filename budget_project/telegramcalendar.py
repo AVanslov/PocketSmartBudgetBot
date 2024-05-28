@@ -1,4 +1,8 @@
-# #!/usr/bin/env python3
+"""
+Функции для работы телеграм бота. 
+На время работы над основным кодом сервиса выключены.
+"""
+
 # #
 # # A library that allows to create an inline calendar keyboard.
 # # grcanosa https://github.com/grcanosa

@@ -133,3 +133,5 @@ dmypy.json
 
 # DB
 db.sqlite3
+
+budget_project/media/

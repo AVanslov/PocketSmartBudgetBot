@@ -53,10 +53,8 @@ rate = Rate.objects.filter(
 
 moneys = Money.objects.filter(
     type__name=type,
-    # date__month=current_month,
     date__year=current_year,
     author=request.user,
-    # category=OuterRef('id'),
 ).order_by().annotate(
     # Получаем id объекта главной валюты
     current_first_currency=F('author__usermaincurrency__main_currency__id'),

@@ -7,6 +7,18 @@ For proper budget management, it is necessary to be able to plan expenses and in
 This is what the SIMBU service was created for. 
 Here the user can record his expenses and income, create his own categories of expenses and income, add monetary transactions in any currency and display statistics in the selected main currency. At the same time, all calculations will be made taking into account the exchange rate on the day of the transaction, which allows you to accurately calculate the budget in any currency.
 
+## How does it looks like?
+
+### Main page
+![View of the main application window](readme_images/main-page.png)
+
+### Dashboard
+![View of the main application window](readme_images/dashboard-page.png)
+
+### Edit main currency
+![View of the main application window](readme_images/edit-main-currency-page.png)
+
+
 ### Applied technologies
 **Languages**
 - Python
@@ -26,6 +38,45 @@ Here the user can record his expenses and income, create his own categories of e
 **Data Base**
 - SQlite for development
 - PostgrsQL for production
+
+> [!NOTE]
+> In this project, the basis of everything is complex SQL queries using annotations and aggregation, as well as ExpressionWrapper, F and Q expressions and Subquery.
+
+
+```
+rate = Rate.objects.filter(
+    date=OuterRef('date'), # Получаем дату текущего родительского объекта
+    first_currency=OuterRef('current_first_currency'), # Получаем первую валюту в паре (она же главная валюта пользователя) текущего родительского объекта
+    second_currency=OuterRef('current_second_currency') # Получаем вторую валюту в паре (она же валюта родительского объекта модели Money)
+).order_by().values('rate')[:1]
+
+
+moneys = Money.objects.filter(
+    type__name=type,
+    # date__month=current_month,
+    date__year=current_year,
+    author=request.user,
+    # category=OuterRef('id'),
+).order_by().annotate(
+    # Получаем id объекта главной валюты
+    current_first_currency=F('author__usermaincurrency__main_currency__id'),
+    # Получаем id объекта валюты текущей денежной операции
+    current_second_currency=F('currency__id'),
+).annotate(
+    # Вычисляем величину в эквиваленте главной валюты,
+    # исходя из курса валют, который был в указанную дату этой денежной операции
+    value_in_main_currency=ExpressionWrapper(
+        F('value') / Subquery(rate),
+        output_field=FloatField(),
+    ),
+).aggregate(
+    total_value_jan=Round(Coalesce(Sum('value_in_main_currency', filter=Q(date__month=1)), Value(0), output_field=FloatField()), 2),
+    ...
+)
+...
+```
+
+
 
 ## Functionality and features of the application
 
